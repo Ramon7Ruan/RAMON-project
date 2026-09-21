@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { contentTagForVersion } from '../../src/shared/repo';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, rmSync, readdirSync, copyFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Concept, ContentMeta, Domain, UpdateInfo } from '../../src/shared/types';
@@ -102,6 +103,39 @@ export function parseJsonl(text: string): { meta: Record<string, unknown> | null
   return { meta, concepts, badLines };
 }
 
+/**
+ * 由 manifest 地址推导**正文**地址。
+ *
+ * 为什么不能简单地"同目录换文件名"：
+ * manifest 走的是**可变分支**（`@main`，发布后 purge 刷新），而正文**不可变**，
+ * 应当锁定到内容版本对应的 tag。若两者都走 `@main`，jsDelivr 对两个文件的缓存是
+ * 独立的，就可能出现"查到 v2 的 manifest、却下载到 v1 的正文"——版本撕裂。
+ * （sha256 校验能兜住，不会装错内容，但会表现为"更新莫名失败"。）
+ *
+ * 非 jsDelivr 的自定义服务器没有 tag 概念，回落到同目录取值。
+ */
+export function resolveContentUrl(manifestUrl: string, version: string, file: string): string {
+  const sameDir = `${manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1)}${file}`;
+
+  // jsDelivr gh 形态：https://cdn.jsdelivr.net/gh/{owner}/{repo}@{ref}/{path}
+  const ghIdx = manifestUrl.indexOf('/gh/');
+  if (ghIdx < 0) return sameDir;
+
+  const head = manifestUrl.slice(0, ghIdx + 4);      // https://cdn.jsdelivr.net/gh/
+  const rest = manifestUrl.slice(ghIdx + 4);         // owner/repo@main/content-dist/manifest.json
+  const at = rest.indexOf('@');
+  if (at < 0) return sameDir;
+
+  const slug = rest.slice(0, at);                    // owner/repo
+  const afterRef = rest.slice(at + 1);               // main/content-dist/manifest.json
+  const slash = afterRef.indexOf('/');
+  if (slash < 0) return sameDir;
+  const dir = afterRef.slice(slash + 1).replace(/[^/]*$/, '');  // content-dist/
+
+  // tag 名前缀由 repo.ts 统一提供，避免与 publish.sh 漂移
+  return `${head}${slug}@${contentTagForVersion(version)}/${dir}${file}`;
+}
+
 export class Updater {
   constructor(private deps: UpdaterDeps) {}
 
@@ -140,7 +174,6 @@ export class Updater {
     // 版本不比本地新（含 CDN 返回旧缓存的情况）→ 视为无更新
     if (compareVersion(m.version, localVersion) <= 0) return { kind: 'skipped', reason: 'up-to-date' };
 
-    const base = manifestUrl.slice(0, manifestUrl.lastIndexOf('/') + 1);
     return {
       kind: 'update',
       info: {
@@ -148,7 +181,8 @@ export class Updater {
         updated_at: m.updated_at,
         counts: m.counts,
         diff: [],
-        fileUrl: `${base}${m.file}`,
+        // 正文走 tag，不用 main：见 resolveContentUrl 的说明
+        fileUrl: resolveContentUrl(manifestUrl, m.version, m.file),
         sha256: m.sha256,
         size: m.size,
       },

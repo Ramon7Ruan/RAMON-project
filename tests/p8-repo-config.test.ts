@@ -16,6 +16,7 @@ import {
   repoFromPackageJson,
 } from '../src/shared/repo';
 import { Services, buildJsonl } from '../app/services';
+import { resolveContentUrl } from '../app/update/updater';
 import { cleanup, makeGroup, tempDir } from './fixtures';
 
 const ROOT = join(__dirname, '..');
@@ -101,6 +102,74 @@ describe('地址构造', () => {
       expect(fromUrl(url), `URL 路径解析不对：${url}`).toBe(expected);
       expect(existsSync(join(ROOT, expected)), `发布产物里缺少 ${expected}`).toBe(true);
     }
+  });
+});
+
+describe('正文地址必须走 tag（防止版本撕裂）', () => {
+  const ref = parseRepoSlug('ramon/RAMON-project')!;
+  const manifest = manifestUrlFor(ref);
+
+  it('jsDelivr 地址 → 正文换成内容版本对应的 tag', () => {
+    expect(resolveContentUrl(manifest, '2026.09.28', 'concepts.jsonl')).toBe(
+      'https://cdn.jsdelivr.net/gh/ramon/RAMON-project@content-v2026.09.28/content-dist/concepts.jsonl',
+    );
+  });
+
+  it('正文地址绝不能带 @main（那正是版本撕裂的来源）', () => {
+    const url = resolveContentUrl(manifest, '2026.09.28', 'concepts.jsonl');
+    expect(url).not.toContain('@main');
+    expect(url).toContain('@content-v2026.09.28');
+    // 文件名与目录保持与 manifest 同级
+    expect(url.endsWith('/content-dist/concepts.jsonl')).toBe(true);
+  });
+
+  it('自定义服务器没有 tag 概念 → 回落到同目录，不能拼出坏地址', () => {
+    const custom = 'https://example.com/recall/content-dist/manifest.json';
+    expect(resolveContentUrl(custom, '2026.09.28', 'concepts.jsonl')).toBe(
+      'https://example.com/recall/content-dist/concepts.jsonl',
+    );
+  });
+
+  it('各种畸形 manifest 地址都不抛异常，且退化为同目录', () => {
+    for (const bad of [
+      'https://cdn.jsdelivr.net/gh/o/r/content-dist/manifest.json',   // 没有 @ref
+      'https://cdn.jsdelivr.net/gh/o/r@main',                        // 没有路径
+      'manifest.json',                                               // 相对路径
+      '',
+    ]) {
+      expect(() => resolveContentUrl(bad, '2026.09.28', 'c.jsonl')).not.toThrow();
+    }
+  });
+
+  it('端到端：checkUpdate 返回的 fileUrl 真的指向 tag（断言真实输出，而非辅助函数）', async () => {
+    const dir = tempDir('recall-tag-');
+    try {
+      const newer = {
+        version: '2026.09.28',
+        updatedAt: '2026-09-28T10:00:00+08:00',
+        schemaVersion: 1,
+        counts: { econ: 3, finance: 0, hotspot: 0, total: 3 },
+        file: 'concepts.jsonl',
+        sha256: 'a'.repeat(64),
+        size: 123,
+      };
+      const svc = new Services({
+        root: dir,
+        appVersion: '1.0.0-test',
+        defaultManifestUrl: manifestUrlFor(ref),
+        fetchImpl: (async () => ({
+          ok: true, status: 200, text: async () => JSON.stringify(newer),
+        })) as never,
+      });
+      try {
+        const r = await svc.checkUpdate();
+        expect(r.kind).toBe('update');
+        const info = (r as { info: { fileUrl: string } }).info;
+        // 这两条才是真正保护行为的断言
+        expect(info.fileUrl).toContain('@content-v2026.09.28/');
+        expect(info.fileUrl).not.toContain('@main/');
+      } finally { svc.close(); }
+    } finally { cleanup(dir); }
   });
 });
 

@@ -19,7 +19,7 @@
 
 ```bash
 npm install
-npm test        # 208 个用例
+npm test        # 213 个用例
 npm run package # 产出 release/mac-arm64/Recall.app
 open release/mac-arm64/Recall.app
 ```
