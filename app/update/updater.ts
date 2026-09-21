@@ -9,8 +9,18 @@ export type Fetcher = (url: string, init?: { signal?: AbortSignal }) => Promise<
   ok: boolean; status: number; text(): Promise<string>;
 }>;
 
+export type SkipReason =
+  | 'not-configured'
+  | 'no-network'
+  | 'timeout'
+  /** 拿到了响应但内容不是合法清单（格式问题） */
+  | 'bad-manifest'
+  /** 内容源返回了非 2xx：通常是还没发布、或仓库/分支名写错 */
+  | 'not-published'
+  | 'up-to-date';
+
 export type CheckResult =
-  | { kind: 'skipped'; reason: 'not-configured' | 'no-network' | 'timeout' | 'bad-manifest' | 'up-to-date' }
+  | { kind: 'skipped'; reason: SkipReason; status?: number }
   | { kind: 'update'; info: UpdateInfo };
 
 export interface UpdaterPaths {
@@ -111,7 +121,11 @@ export class Updater {
     let text: string;
     try {
       const res = await this.deps.fetch(manifestUrl, { signal: ac.signal });
-      if (!res.ok) return { kind: 'skipped', reason: 'bad-manifest' };
+      if (!res.ok) {
+        // 必须和"格式非法"区分开：404 通常是内容还没发布 / 仓库或分支名写错，
+        // 若笼统报成 bad-manifest，UI 会显示"清单格式异常"，问题会变得极难排查。
+        return { kind: 'skipped', reason: 'not-published', status: res.status };
+      }
       text = await res.text();
     } catch (e) {
       const aborted = (e as { name?: string })?.name === 'AbortError';

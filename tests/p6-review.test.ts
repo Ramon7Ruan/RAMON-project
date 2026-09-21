@@ -241,6 +241,25 @@ describe('P6 内容更新失败矩阵（架构 §4.6，硬门禁）', () => {
     expect(await svc.checkUpdate()).toEqual({ kind: 'skipped', reason: 'bad-manifest' });
   });
 
+  it('④b 内容源返回 404：静默跳过，且原因必须与"格式非法"区分开', async () => {
+    // 真实场景：仓库还没发布、或分支/仓库名写错。
+    // 若笼统报 bad-manifest，UI 会显示"清单格式异常"，把配置问题伪装成格式问题。
+    svc = newService(makeFetch(() => ({ status: 404, body: 'Couldn\'t find it' })) as never);
+    svc.updateSettings({ manifestUrl: baseManifestUrl });
+    const r = await svc.checkUpdate();
+    expect(r).toEqual({ kind: 'skipped', reason: 'not-published', status: 404 });
+  });
+
+  it('④c 内容源返回 500：同样按 not-published 处理，不影响使用', async () => {
+    svc = newService(makeFetch(() => ({ status: 500, body: 'oops' })) as never);
+    svc.updateSettings({ manifestUrl: baseManifestUrl });
+    const r = await svc.checkUpdate();
+    expect(r.kind).toBe('skipped');
+    expect((r as { reason: string }).reason).toBe('not-published');
+    // 关键：库仍可用
+    expect(svc.meta().counts.total).toBe(0);
+  });
+
   it('⑤ jsDelivr 返回旧缓存（版本不比本地新）：视为无更新', async () => {
     svc = newService(makeFetch(() => ({ reject: 'network' })) as never);
     // 先导入一个较新的版本

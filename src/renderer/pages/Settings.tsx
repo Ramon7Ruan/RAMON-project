@@ -18,6 +18,7 @@ const SKIP_TEXT: Record<string, string> = {
   'not-configured': '尚未配置内容分发地址——可在下方填写，或直接用「导入内容」',
   'no-network': '检查更新失败（网络不可用），不影响使用',
   timeout: '检查更新超时，不影响使用',
+  'not-published': '内容源暂无该文件（可能还没发布，或地址/分支有误）——不影响使用',
   'bad-manifest': '内容清单格式异常，已跳过',
   'up-to-date': '已是最新版本',
 };
