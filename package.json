@@ -1,0 +1,49 @@
+{
+  "name": "recall",
+  "productName": "Recall",
+  "version": "1.0.0",
+  "description": "金融知识复习 App — 纯本地运行",
+  "main": "dist-electron/app/main.js",
+  "author": "Ramon",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:renderer": "vite build",
+    "build": "npm run build:electron && npm run build:renderer",
+    "start": "npm run build && electron .",
+    "dev": "npm run build:electron && concurrently -k \"vite\" \"wait-on tcp:127.0.0.1:5173 && cross-env RECALL_DEV_URL=http://127.0.0.1:5173 electron .\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "gate": "tsx tools/validate-content.ts",
+    "build:content": "tsx tools/build-package.ts",
+    "publish:content": "bash tools/publish.sh",
+    "icon": "bash tools/make-icon.sh",
+    "package": "npm run build && electron-builder --mac --dir",
+    "dist": "npm run build && electron-builder --mac"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^44.0.0",
+    "electron-builder": "^25.1.8",
+    "jsdom": "^30.1.0",
+    "katex": "^0.16.11",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8",
+    "wait-on": "^8.0.1",
+    "yaml": "^2.6.1"
+  },
+  "recall": {
+    "contentRepo": "Ramon7Ruan/RAMON-project",
+    "contentBranch": "main"
+  }
+}

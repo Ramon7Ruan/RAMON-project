@@ -1,0 +1,879 @@
+# 世界热点 20 个概念（事件解剖 12 / 数据观察 8）
+# 差异化约束：本区每个概念必须包含 timeline，且 source 必填（时间、因果、分歧）
+# 时效机制：source 里带「截至 YYYY-MM-DD」，超过 30 天由 UI 转琥珀色过时提示
+
+# ============================ 事件解剖 ============================
+
+- id: hotspot.event.fed-cut-2026
+  domain: hotspot
+  track: event
+  title: 美联储降息与曲线重定价
+  one_liner: 降息落地后，长端收益率为什么反而上行？
+  key_points:
+    - 降息是短端的事，长端由预期决定
+    - 被读成「鹰派降息」时，长端反而上行
+  difficulty: 2
+  tags: [美联储, 利率]
+  order: 1
+  updated_at: 2026-09-20
+  source: 美联储议息声明与点阵图，美国财政部收益率数据，截至 2026-09-20
+  recipe: [prose, dataviz, compare, timeline]
+  blocks:
+    - {type: prose, label: 定义, body: "降息是**短端**的事，长端由增长与通胀预期决定。当市场把这次降息读成**经济比预期更有韧性**时，长端收益率反而会走高——这就是所谓的「鹰派降息」反应。"}
+    - type: timeline
+      label: 事件脉络
+      events:
+        - {date: "2026-08 中旬", title: 就业数据走弱, note: 市场隐含降息概率升至 80% 以上。}
+        - {date: "2026-09-17", title: 议息会议降息 25bp, note: 点阵图显示年内可能再降一次。, hot: true}
+        - {date: "2026-09-18", title: 长端收益率上行, note: 10 年期反而走高约 8bp。}
+        - {date: "2026-09-20", title: 曲线陡峭化, note: 2s10s 利差走阔至年内高位。}
+    - type: dataviz
+      label: 会议前后曲线变化
+      chart: line
+      xLabel: 期限
+      yLabel: 收益率 %
+      xTicks: ["2Y", "5Y", "10Y", "30Y"]
+      series:
+        - {name: 会议前, points: [3.6, 3.7, 3.85, 4.05]}
+        - {name: 会议后, points: [3.35, 3.65, 3.93, 4.25]}
+      source: 示意数据，仅用于说明陡峭化方向
+    - type: compare
+      label: 两种市场解读
+      columns: ["", 鸽派解读, 鹰派解读]
+      rows:
+        - [关注点, 降息这个动作本身, 经济韧性与通胀粘性]
+        - [对长端, 收益率下行, 收益率上行]
+        - [对风险资产, 普遍利好, 分化，价值强于成长]
+  links:
+    - {to: finance.bond.yield-curve, reason: 基础概念：曲线形态由什么决定}
+    - {to: econ.macro.monetary-transmission, reason: 基础概念：降息如何传导到实体}
+
+- id: hotspot.event.pboc-lpr-2026
+  domain: hotspot
+  track: event
+  title: LPR 非对称下调
+  one_liner: 为什么这次只降了 5 年期？
+  key_points:
+    - 1 年期锚企业贷款，5 年期以上锚房贷
+    - 非对称下调是稳地产与保息差的取舍
+  difficulty: 2
+  tags: [LPR, 银行]
+  order: 2
+  updated_at: 2026-09-15
+  source: 全国银行间同业拆借中心 LPR 公告，截至 2026-09-15
+  recipe: [prose, timeline, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "1 年期 LPR 主要锚定企业短期贷款，5 年期以上 LPR 锚定房贷。**非对称下调**意味着政策在「稳地产」与「保银行息差」之间做取舍。"}
+    - type: timeline
+      label: 政策脉络
+      events:
+        - {date: "2026-06", title: 1 年期 LPR 下调 10bp, note: 5 年期维持不变。}
+        - {date: "2026-09", title: 5 年期以上单独下调 15bp, note: 指向房贷成本与地产需求。, hot: true}
+        - {date: "2026-09 下旬", title: 商业银行净息差继续收窄, note: 负债端成本刚性是主要约束。}
+    - type: case
+      label: 微案例
+      title: 为什么银行息差不配合
+      nums: [{label: 净息差, v: 历史低位}, {label: 存款成本, v: 刚性强}]
+      body: 资产端利率持续下行，但存款利率调整滞后。息差被压到低位后，银行放贷意愿成为新的传导瓶颈。
+    - {type: pitfall, label: 误区, wrong: LPR 下调就等于实际贷款利率同步下降。, right: 还要看银行加点、信贷额度与企业是否有融资需求。, why: 报价利率是基准，实际成交取决于供需与风险定价。}
+  links:
+    - {to: econ.macro.monetary-transmission, reason: 基础概念：传导链条上的漏损点}
+    - {to: finance.bond.yield-curve, reason: 关联：政策利率与长端定价}
+
+- id: hotspot.event.svb-collapse
+  domain: hotspot
+  track: event
+  title: 硅谷银行事件
+  one_liner: 一家银行的亏损，为什么两天就变成挤兑？
+  key_points:
+    - 期限错配遇上快速加息，账面亏损变实际亏损
+    - 社交媒体时代，挤兑以小时计而非以天计
+  difficulty: 3
+  tags: [银行, 流动性]
+  order: 3
+  updated_at: 2026-09-10
+  source: 美国联邦存款保险公司处置公告与监管听证记录，截至 2026-09-10
+  recipe: [prose, flow, timeline, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "这家银行的资产大量配置在长久期债券上，负债却是随时可取的存款。**利率快速上行让债券浮亏**，一旦需要变现就变成实亏，而信息传播的速度又让存款在两天内流走。"}
+    - type: timeline
+      label: 事件脉络
+      events:
+        - {date: "2022-2023", title: 快速加息, note: 持有至到期的债券出现大额浮亏。}
+        - {date: "2023-03-08", title: 宣布融资计划, note: 市场解读为流动性紧张。}
+        - {date: "2023-03-09", title: 单日存款流出创纪录, note: 股价大幅下挫。, hot: true}
+        - {date: "2023-03-10", title: 被监管接管, note: 从披露到倒闭不到 48 小时。}
+    - type: flow
+      label: 挤兑是怎么加速的
+      steps:
+        - {label: 浮亏被关注, note: 分析师与投资者讨论}
+        - {label: 股价下跌, note: 存款人开始担心}
+        - {label: 手机银行转账, note: 无需排队即可提款}
+        - {label: 自我实现的挤兑, note: 越担心越早取钱}
+    - {type: pitfall, label: 误区, wrong: 这只是个别银行的经营问题。, right: 同样的期限错配在加息周期里是普遍存在的结构性风险。, why: 关键在于负债端的稳定性，而不是资产端是否"有问题"。}
+  links:
+    - {to: finance.bond.duration, reason: 基础概念：久期决定浮亏幅度}
+    - {to: finance.bond.repo, reason: 关联：流动性如何突然枯竭}
+
+- id: hotspot.event.japan-ycc-exit
+  domain: hotspot
+  track: event
+  title: 日本退出收益率曲线控制
+  one_liner: 维持了多年的低利率，为什么必须退出？
+  key_points:
+    - 汇率与输入型通胀迫使政策转向
+    - 退出过程比终点更关键，节奏决定冲击大小
+  difficulty: 3
+  tags: [日本, 货币政策]
+  order: 4
+  updated_at: 2026-09-12
+  source: 日本银行政策声明与会议纪要，截至 2026-09-12
+  recipe: [prose, dataviz, compare, timeline, case]
+  blocks:
+    - {type: prose, label: 定义, body: "收益率曲线控制是通过大量购债把长端利率压在目标区间。**当通胀与汇率压力持续累积**，维持这个区间的成本越来越高，退出就成了时间问题。"}
+    - type: timeline
+      label: 退出路径
+      events:
+        - {date: "2016", title: 引入收益率曲线控制, note: 把 10 年期利率锚在零附近。}
+        - {date: "2024", title: 结束负利率, note: 首次加息，但购债仍在继续。}
+        - {date: "2026 上半年", title: 逐步放宽长端容忍区间, note: 每次幅度都很小。, hot: true}
+        - {date: "2026-09", title: 长端利率明显上移, note: 市场开始讨论正常化终点。}
+    - type: compare
+      label: 退出节奏的两种路径
+      columns: ["", 渐进退出, 快速退出]
+      rows:
+        - [市场冲击, 相对可控, 可能引发全球再定价]
+        - [政策可信度, 需要反复沟通, 一次性锚定预期]
+        - [对日元的支持, 较弱且缓慢, 较强但风险高]
+    - type: dataviz
+      label: 长端利率与汇率的方向
+      chart: line
+      xLabel: 时间
+      yLabel: 指数化水平
+      xTicks: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"]
+      series:
+        - {name: 10 年期利率, points: [100, 103, 106, 112, 118, 124]}
+        - {name: 日元汇率（升值方向）, points: [100, 98, 99, 102, 104, 107]}
+      source: 示意数据，仅用于说明两者的关系
+    - type: case
+      label: 微案例
+      title: 每次放宽区间只有一点点
+      nums: [{label: 单次调整幅度, v: 25bp 以内}, {label: 调整次数, v: 多次}]
+      body: 幅度小、次数多，是为了避免一次性冲击全球债市。代价是市场会持续试探政策底线，形成反复波动。
+  links:
+    - {to: finance.bond.yield-curve, reason: 基础概念：长端利率由什么决定}
+    - {to: econ.macro.exchange-rate-regime, reason: 基础概念：汇率与货币政策的关系}
+
+- id: hotspot.event.evergrande-default
+  domain: hotspot
+  track: event
+  title: 地产信用事件
+  one_liner: 一家房企的债务，为什么能牵动整个产业链？
+  key_points:
+    - 预售制下，房企现金流依赖销售回款
+    - 信用收缩会沿着供应链和预售房传导
+  difficulty: 3
+  tags: [地产, 信用]
+  order: 5
+  updated_at: 2026-09-08
+  source: 企业公告与债券受托管理人披露，截至 2026-09-08
+  recipe: [prose, flow, timeline, case]
+  blocks:
+    - {type: prose, label: 定义, body: "房企的现金流入主要依靠**销售回款与再融资**。一旦销售转弱、融资收紧，两头同时收缩，就形成了自我强化的流动性危机，并沿供应链与预售房传导出去。"}
+    - type: timeline
+      label: 事件脉络
+      events:
+        - {date: "2020-08", title: 融资管理规则出台, note: 有息负债增速受约束。}
+        - {date: "2021 下半年", title: 销售转弱, note: 回款下降，部分项目停工。}
+        - {date: "2021-12", title: 境外债实质性违约, note: 触发交叉违约条款。, hot: true}
+        - {date: "2022 至今", title: 保交楼与债务重组并行, note: 处置周期以年计。}
+    - type: flow
+      label: 风险是怎么传导的
+      steps:
+        - {label: 房企现金流紧张, note: 销售与融资双收缩}
+        - {label: 供应链账款拖欠, note: 建筑与材料商受累}
+        - {label: 项目停工, note: 购房者信心进一步下降}
+        - {label: 销售继续转弱, note: 形成负向循环}
+    - type: case
+      label: 微案例
+      title: 为什么处置这么慢
+      nums: [{label: 在建项目数量, v: 数百个}, {label: 涉及债权人, v: 境内外多层}]
+      body: 资产是分布在不同城市的在建项目，变现需要逐个推进。债务结构又跨越银行、信托、供应商与购房者，清偿顺序谈判极其复杂。
+  links:
+    - {to: finance.bond.credit-spread, reason: 基础概念：信用风险如何定价}
+    - {to: hotspot.data.credit-impulse, reason: 关联：信用扩张与收缩的度量}
+
+- id: hotspot.event.semiconductor-export-control
+  domain: hotspot
+  track: event
+  title: 半导体出口管制
+  one_liner: 限制出口，为什么两头都会受损？
+  key_points:
+    - 管制同时打击供给方收入与需求方产能
+    - 短期替代成本高，长期会催生本土替代
+  difficulty: 3
+  tags: [半导体, 贸易]
+  order: 6
+  updated_at: 2026-09-05
+  source: 各国主管部门公告与行业协会统计，截至 2026-09-05
+  recipe: [prose, dataviz, compare, timeline, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "出口管制通过许可制度限制特定设备与技术流向特定主体。**对供给方是收入损失，对需求方是产能约束**，双方都要承担成本，只是时间分布不同。"}
+    - type: timeline
+      label: 政策演进
+      events:
+        - {date: "2019", title: 针对单一企业的实体清单, note: 供应链开始分叉。}
+        - {date: "2022-10", title: 扩展到先进制程设备与人才, note: 覆盖面显著扩大。, hot: true}
+        - {date: "2023-2024", title: 收紧并增加盟友协同, note: 转口路径被逐一堵上。}
+        - {date: "2026", title: 关注点转向成熟制程产能过剩, note: 讨论从技术转向产能。}
+    - type: compare
+      label: 两侧的短期与长期
+      columns: ["", 供给方, 需求方]
+      rows:
+        - [短期, 失去部分收入, 产能与良率受限]
+        - [长期, 推动客户自研替代, 本土供应链加速成熟]
+        - [最终的行业格局, 市场分割, 双轨体系]
+    - type: dataviz
+      label: 设备采购来源的变化
+      chart: bar
+      xLabel: 年份
+      yLabel: 进口设备占比 %
+      xTicks: ["2020", "2022", "2024", "2026"]
+      series: [{name: 占比, points: [86, 72, 55, 41]}]
+      source: 示意数据，仅用于说明替代进程
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "单点限制", t: "影响个别企业\n供应链可绕行"}
+        - {v: "设备与技术支持", t: "影响整条产线\n替代需数年"}
+        - {v: "全链条协同", t: "形成双轨体系\n成本长期抬升"}
+  links:
+    - {to: econ.micro.externality, reason: 基础概念：政策造成的未定价成本}
+    - {to: hotspot.event.shipping-red-sea, reason: 关联：另一类供应链扰动}
+
+- id: hotspot.event.opec-cut
+  domain: hotspot
+  track: event
+  title: 减产与油价
+  one_liner: 宣布减产，油价为什么有时候不涨？
+  key_points:
+    - 价格反应取决于预期差，而不是消息本身
+    - 减产配额与实际执行往往存在差距
+  difficulty: 2
+  tags: [原油, 供给]
+  order: 7
+  updated_at: 2026-09-14
+  source: 产油国组织公告与国际能源署月报，截至 2026-09-14
+  recipe: [prose, curve, compare, timeline, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "油价反应的不是减产消息本身，而是**实际减产与市场预期之间的差**。如果市场早已预期到，消息落地时反而可能下跌。"}
+    - type: timeline
+      label: 事件脉络
+      events:
+        - {date: "2026-06", title: 会议释放减产信号, note: 油价小幅上行。}
+        - {date: "2026-08", title: 正式宣布延长减产, note: 因低于市场预期，油价反而回落。, hot: true}
+        - {date: "2026-09", title: 执行率数据公布, note: 部分成员实际产量高于配额。}
+        - {date: "2026-09 下旬", title: 油价区间震荡, note: 需求端数据成为主导变量。}
+    - type: curve
+      label: 需求与供给的短期刚性
+      xLabel: 数量 Q
+      yLabel: 价格 P
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 短期供需都缺弹性，小幅失衡就带来大幅价格波动。
+      series:
+        - {name: 需求（陡峭）, points: [[3, 9.6], [4, 9], [5, 8.2], [6, 7.2], [7, 5.8]]}
+        - {name: 供给, points: [[4, 1], [5, 3], [6, 5], [7, 7], [8, 9]]}
+    - {type: pitfall, label: 误区, wrong: 减产必然推高油价。, right: 要看是否超出市场已有预期，以及实际执行率。, why: 价格定价的是意外程度，不是动作大小。}
+    - type: compare
+      label: 减产的两种情形
+      columns: ["", 超预期减产, 不及预期减产]
+      rows:
+        - [价格反应, 明显上行, 反而回落]
+        - [原因, 市场此前未充分定价, 已被提前交易]
+        - [后续关注, 执行率与需求端, 库存与需求数据]
+  links:
+    - {to: econ.macro.inflation-expectation, reason: 基础概念：能源价格如何进入通胀预期}
+    - {to: hotspot.data.cftc-positions, reason: 关联：持仓数据怎么看市场分歧}
+
+- id: hotspot.event.us-debt-ceiling
+  domain: hotspot
+  track: event
+  title: 债务上限僵局
+  one_liner: 明明可以提高上限，为什么还要僵持到最后？
+  key_points:
+    - 上限是政治博弈工具，不是经济约束
+    - 即使最终解决，短期也会推高短期融资成本
+  difficulty: 2
+  tags: [财政, 美国]
+  order: 8
+  updated_at: 2026-09-09
+  source: 美国财政部现金余额与短期国库券收益率数据，截至 2026-09-09
+  recipe: [prose, dataviz, timeline, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "债务上限限制的是**存量债务规模**，而不是新增支出。因为触及上限而无法发债时，财政部只能动用现金余额与非常规措施，市场会提前给临近到期的国库券定价风险。"}
+    - type: timeline
+      label: 僵局的演化
+      events:
+        - {date: "T-90 天", title: 财政部开始动用非常规措施, note: 市场尚未定价。}
+        - {date: "T-30 天", title: 到期日临近的国库券收益率跳升, note: 出现明显折价。, hot: true}
+        - {date: "T-7 天", title: 谈判反复, note: 波动率显著抬升。}
+        - {date: "T 日", title: 最后时刻达成协议, note: 收益率迅速回落。}
+    - type: dataviz
+      label: 临近到期日的国库券收益率
+      chart: bar
+      xLabel: 到期日
+      yLabel: 收益率 %
+      xTicks: ["1M", "2M", "3M", "临近日", "之后"]
+      series: [{name: 收益率, points: [5.2, 5.3, 5.35, 6.4, 5.25]}]
+      source: 示意数据，仅用于说明风险溢价集中在近端
+    - {type: pitfall, label: 误区, wrong: 历史上都解决了，所以这次也没事。, right: 每次都在临近期限时产生实实在在的融资成本与市场波动。, why: 概率低不等于成本为零，风险溢价在过程中是真实发生的。}
+  links:
+    - {to: finance.bond.repo, reason: 基础概念：短期融资市场的运作}
+    - {to: econ.macro.fiscal-multiplier, reason: 基础概念：财政政策对产出的影响}
+
+- id: hotspot.event.shipping-red-sea
+  domain: hotspot
+  track: event
+  title: 红海航运扰动
+  one_liner: 绕行好望角，成本会传到哪里？
+  key_points:
+    - 运距拉长同时抬高运费与交付时间
+    - 运费先影响商品价格，再影响通胀数据
+  difficulty: 2
+  tags: [航运, 供应链]
+  order: 9
+  updated_at: 2026-09-06
+  source: 主要班轮公司公告与航运指数报价，截至 2026-09-06
+  recipe: [prose, dataviz, flow, timeline]
+  blocks:
+    - {type: prose, label: 定义, body: "绕行好望角会同时**拉长航距与占用更多运力**。结果是运费上涨、船期延长，成本沿供应链向下游传导，最终体现在部分商品价格上。"}
+    - type: timeline
+      label: 事件脉络
+      events:
+        - {date: "2023-11", title: 航线安全事件增加, note: 部分船公司暂停该航线。}
+        - {date: "2023-12", title: 主要班轮公司宣布绕行, note: 航程增加约 10 到 14 天。, hot: true}
+        - {date: "2024 上半年", title: 即期运费大幅上涨, note: 运力被航距吞噬。}
+        - {date: "2026", title: 运费回落但仍高于事件前, note: 航线格局已部分重构。}
+    - type: flow
+      label: 成本传导路径
+      steps:
+        - {label: 航距拉长, note: 单位航次运力下降}
+        - {label: 运费上涨, note: 即期市场先反应}
+        - {label: 交货延迟, note: 库存与周转受影响}
+        - {label: 商品价格, note: 部分品类成本上升}
+    - type: dataviz
+      label: 运费的阶段性变化
+      chart: line
+      xLabel: 时间
+      yLabel: 运费指数
+      xTicks: ["事件前", "Q1", "Q2", "Q3", "Q4", "近月"]
+      series: [{name: 运费指数, points: [100, 145, 210, 260, 190, 155]}]
+      source: 示意数据，仅用于说明传导节奏
+  links:
+    - {to: hotspot.data.pmi-reading, reason: 关联：供应链压力如何体现在景气指标里}
+    - {to: econ.macro.cpi-vs-core, reason: 基础概念：运费如何进入通胀口径}
+
+- id: hotspot.event.china-property-policy
+  domain: hotspot
+  track: event
+  title: 地产政策组合拳
+  one_liner: 政策一条接一条，为什么销售还没起来？
+  key_points:
+    - 政策改善的是购买条件，不直接改变购买意愿
+    - 居民对房价的预期是关键中间变量
+  difficulty: 2
+  tags: [地产, 政策]
+  order: 10
+  updated_at: 2026-09-16
+  source: 主要城市住建与金融管理部门政策公告汇总，截至 2026-09-16
+  recipe: [prose, compare, timeline, case]
+  blocks:
+    - {type: prose, label: 定义, body: "政策组合拳通常包括**降低首付比例、下调房贷利率、放宽限购、收储**。它们改善的是购房的**条件与成本**，但最终是否成交，还取决于居民对房价与收入的预期。"}
+    - type: timeline
+      label: 政策脉络
+      events:
+        - {date: "2026-05", title: 首付比例下调, note: 一线城市同步放松。}
+        - {date: "2026-07", title: 房贷利率下限进一步放开, note: 部分城市降至历史低位。}
+        - {date: "2026-08", title: 推进存量房收储, note: 用于保障性住房。, hot: true}
+        - {date: "2026-09", title: 成交面积温和回升, note: 但价格预期仍偏弱。}
+    - type: compare
+      label: 政策能改与不能改
+      columns: ["", 政策能直接改变, 政策难以直接改变]
+      rows:
+        - [购房成本, 首付与利率, 未来收入预期]
+        - [购买资格, 限购与落户, 对房价走势的判断]
+        - [供给结构, 收储与供地, 存量房的估值锚]
+    - type: case
+      label: 微案例
+      title: 降了利率但没成交
+      nums: [{label: 月供下降, v: 约 8%}, {label: 预期房价变动, v: -3%}]
+      body: 月供省下的钱，抵不过对房价继续下跌的担心。这就是为什么政策传导需要预期先稳住。
+  links:
+    - {to: hotspot.data.credit-impulse, reason: 关联：信用扩张的度量方式}
+    - {to: econ.macro.monetary-transmission, reason: 基础概念：利率如何传导到实体}
+
+- id: hotspot.event.euro-area-energy
+  domain: hotspot
+  track: event
+  title: 欧洲能源冲击
+  one_liner: 能源涨价，为什么对贸易顺差国打击更大？
+  key_points:
+    - 能源进口国的贸易条件恶化，等于国民收入外流
+    - 冲击同时推高通胀并压低产出
+  difficulty: 3
+  tags: [能源, 贸易]
+  order: 11
+  updated_at: 2026-09-04
+  source: 欧盟统计局能源价格与贸易差额数据，截至 2026-09-04
+  recipe: [prose, curve, compare, timeline]
+  blocks:
+    - {type: prose, label: 定义, body: "能源是**几乎所有生产的投入品**。价格飙升时，进口国既要付更多钱买同样的能源，又要面对成本推动的通胀——贸易条件恶化，实际收入下降。"}
+    - type: timeline
+      label: 冲击与应对
+      events:
+        - {date: "2022", title: 天然气价格飙升, note: 电力与化工成本跳升。}
+        - {date: "2022-2023", title: 贸易差额恶化, note: 出现罕见逆差。, hot: true}
+        - {date: "2023", title: 加速替代与储备建设, note: 需求结构被迫调整。}
+        - {date: "2024-2026", title: 价格回落但成本中枢上移, note: 部分工业产能外迁。}
+    - type: curve
+      label: 成本推动下的两难
+      xLabel: 产出
+      yLabel: 通胀
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 供给冲击把曲线往上推，央行面临通胀与产出的反向取舍。
+      series:
+        - {name: 冲击前, points: [[2, 8.6], [4, 6.4], [6, 4.4], [8, 2.8]]}
+        - {name: 冲击后, points: [[2, 10], [4, 7.8], [6, 5.8], [8, 4.2]], dash: 5}
+    - type: compare
+      label: 两种应对的代价
+      columns: ["", 加息抗通胀, 补贴保产出]
+      rows:
+        - [对通胀, 直接压制, 延续时间更长]
+        - [对产出, 加剧放缓, 缓解短期压力]
+        - [财政成本, 无, 显著]
+  links:
+    - {to: econ.macro.phillips-curve, reason: 基础概念：供给冲击如何移动这条曲线}
+    - {to: econ.macro.cpi-vs-core, reason: 关联：为什么央行更看核心通胀}
+
+- id: hotspot.event.currency-defense
+  domain: hotspot
+  track: event
+  title: 新兴市场货币保卫战
+  one_liner: 加息到 40%，为什么还要继续加？
+  key_points:
+    - 汇率贬值会通过进口价格推高本币通胀
+    - 加息稳汇率与稳增长之间存在直接冲突
+  difficulty: 3
+  tags: [汇率, 新兴市场]
+  order: 12
+  updated_at: 2026-09-11
+  source: 相关国家央行政策公告与汇率中间价数据，截至 2026-09-11
+  recipe: [prose, compare, flow, timeline, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "当本币快速贬值时，进口商品变贵，**输入型通胀**迅速抬升。央行被迫加息以收窄利差、稳住汇率，但高利率同时压制本已疲弱的国内需求。"}
+    - type: timeline
+      label: 典型的保卫战过程
+      events:
+        - {date: "T-6 月", title: 外部利率上行, note: 资本开始流出。}
+        - {date: "T-3 月", title: 汇率跌破关键位置, note: 干预入场。}
+        - {date: "T 日", title: 大幅加息与临时资本管制, note: 汇率短暂稳住。, hot: true}
+        - {date: "T+3 月", title: 通胀见顶回落, note: 代价是投资与消费明显走弱。}
+    - type: flow
+      label: 传导与反制
+      steps:
+        - {label: 资本外流, note: 利差收窄}
+        - {label: 本币贬值, note: 进口价格上升}
+        - {label: 输入型通胀, note: 居民实际收入下降}
+        - {label: 被迫加息, note: 内需进一步承压}
+    - {type: pitfall, label: 误区, wrong: 只要外汇储备够多，汇率就守得住。, right: 储备是缓冲，不是解决方案；根本矛盾在利差与预期。, why: 与市场对赌存量储备，成本会呈指数级上升。}
+    - type: compare
+      label: 三种防御工具
+      columns: ["", 加息, 外汇干预, 资本管制]
+      rows:
+        - [作用机制, 收窄利差吸引资金, 直接买入本币, 限制流出]
+        - [代价, 内需承压, 消耗储备, 配置效率损失]
+        - [可持续性, 取决于通胀容忍度, 储备有限, 短期有效]
+  links:
+    - {to: econ.macro.exchange-rate-regime, reason: 基础概念：不可能三角的约束}
+    - {to: econ.macro.inflation-expectation, reason: 关联：汇率预期与通胀预期互相强化}
+
+# ============================ 数据观察 ============================
+
+- id: hotspot.data.pmi-reading
+  domain: hotspot
+  track: data
+  title: PMI 怎么读
+  one_liner: PMI 是 49.8，到底是好还是坏？
+  key_points:
+    - 50 是荣枯线，但方向比水平更重要
+    - 看新订单与库存的相对位置
+  difficulty: 2
+  tags: [景气度, 数据]
+  order: 13
+  updated_at: 2026-09-01
+  source: 国家统计局与中国物流与采购联合会 PMI 月度发布，截至 2026-09-01
+  recipe: [prose, dataviz, compare, timeline, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "PMI 是**环比扩散指数**，50 是荣枯线。但连续三个月的**方向**比单月水平更有信息量，而新订单与库存的相对位置决定了补库还是去库。"}
+    - type: timeline
+      label: 一个完整周期里的 PMI
+      events:
+        - {date: "阶段一", title: 新订单回升，库存仍在低位, note: 主动补库开始。}
+        - {date: "阶段二", title: 两者同步上行, note: 景气度最高。, hot: true}
+        - {date: "阶段三", title: 新订单回落，库存高企, note: 被动补库。}
+        - {date: "阶段四", title: 双双下行, note: 主动去库，压力最大。}
+    - type: dataviz
+      label: 新订单与库存的剪刀差
+      chart: line
+      xLabel: 月份
+      yLabel: PMI 分项
+      xTicks: ["1", "2", "3", "4", "5", "6"]
+      series:
+        - {name: 新订单, points: [48.5, 49.2, 50.6, 51.2, 50.4, 49.8]}
+        - {name: 产成品库存, points: [47.2, 47.6, 48.1, 48.8, 49.6, 50.2]}
+      source: 示意数据，仅用于说明剪刀差的用法
+    - type: compare
+      label: 两个口径的区别
+      columns: ["", 制造业 PMI, 非制造业 PMI]
+      rows:
+        - [覆盖对象, 制造业企业采购经理, 服务业与建筑业]
+        - [对什么更敏感, 出口与库存周期, 消费与投资活动]
+        - [常用场景, 判断工业景气, 判断内需强弱]
+    - type: pitfall
+      label: 误区
+      wrong: PMI 低于 50 就是经济在衰退。
+      right: 50 是环比荣枯线，连续低于 50 才说明收缩在持续。
+      why: PMI 是环比指标，单月受季节与短期扰动影响很大。
+  links:
+    - {to: hotspot.data.inventory-cycle, reason: 延伸：库存周期的四个阶段}
+    - {to: econ.macro.gdp-three-ways, reason: 基础概念：景气数据与 GDP 的关系}
+
+- id: hotspot.data.social-financing
+  domain: hotspot
+  track: data
+  title: 社融与货币供应量
+  one_liner: 社融回升了，为什么 M1 还在跌？
+  key_points:
+    - 社融是实体拿到的钱，M1 是实体愿意留活期的钱
+    - 两者背离说明资金在体系内空转
+  difficulty: 3
+  tags: [社融, 货币]
+  order: 14
+  updated_at: 2026-09-02
+  source: 中国人民银行社会融资规模与货币供应量月度数据，截至 2026-09-02
+  recipe: [prose, dataviz, timeline, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "社会融资规模衡量**实体经济从金融体系获得的资金总量**；M1 主要包含流通中现金与企业活期存款，反映**资金的活跃程度**。前者是供给，后者是意愿。"}
+    - type: timeline
+      label: 典型的政策传导时滞
+      events:
+        - {date: "第 1 月", title: 政策放松，社融先行回升, note: 主要靠政府债券与票据。}
+        - {date: "第 2 到 3 月", title: 企业中长期贷款跟进, note: 才是真实需求信号。, hot: true}
+        - {date: "第 3 到 6 月", title: M1 增速回升, note: 资金开始活起来。}
+        - {date: "第 6 月后", title: 投资与价格数据改善, note: 传导完成。}
+    - type: dataviz
+      label: 社融与 M1 的背离
+      chart: line
+      xLabel: 月份
+      yLabel: 同比 %
+      xTicks: ["1", "2", "3", "4", "5", "6"]
+      series:
+        - {name: 社融存量增速, points: [8.4, 8.7, 9.1, 9.4, 9.6, 9.8]}
+        - {name: M1 增速, points: [2.1, 1.8, 1.5, 1.6, 2, 2.6]}
+      source: 示意数据，仅用于说明背离形态
+    - {type: pitfall, label: 误区, wrong: 社融回升就等同于经济要起来了。, right: 要先拆开看，是政府债券、票据冲量，还是企业中长期贷款。, why: 结构决定性质：靠票据与政府债撑起来的社融，传导效率远低于企业自发融资。}
+    - type: case
+      label: 微案例
+      title: 拆开社融看结构
+      nums: [{label: 社融同比多增, v: 1.2 万亿}, {label: 其中政府债券, v: 0.9 万亿}]
+      body: 多增的部分主要来自政府债券，企业中长期贷款并未同步回升。这种结构说明财政在发力，但实体自发融资仍偏弱。
+  links:
+    - {to: econ.macro.money-multiplier, reason: 基础概念：货币是怎么被创造出来的}
+    - {to: hotspot.data.credit-impulse, reason: 延伸：更领先的信用指标}
+
+- id: hotspot.data.yield-curve-inversion
+  domain: hotspot
+  track: data
+  title: 收益率曲线倒挂
+  one_liner: 倒挂之后，衰退一定会来吗？
+  key_points:
+    - 倒挂是市场对降息的预期，不是衰退本身
+    - 领先期长且存在假信号，只能当概率信息
+  difficulty: 2
+  tags: [利率, 周期]
+  order: 15
+  updated_at: 2026-09-03
+  source: 主要经济体国债收益率曲线与利差数据，截至 2026-09-03
+  recipe: [prose, dataviz, timeline, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "长端低于短端就是倒挂。它反映市场认为**未来利率会低于现在**，通常因为预期增长与通胀走弱。它是有信息量的信号，但不是倒计时器。"}
+    - type: dataviz
+      label: 倒挂深度与后续表现
+      chart: bar
+      xLabel: 倒挂深度
+      yLabel: 后续 18 个月衰退概率 %
+      xTicks: ["无倒挂", "浅倒挂", "中等", "深度倒挂"]
+      series: [{name: 衰退概率, points: [16, 32, 48, 61]}]
+      source: 示意数据，仅用于说明概率随深度上升
+    - type: timeline
+      label: 典型的时间关系
+      events:
+        - {date: "T 月", title: 曲线开始倒挂, note: 市场预期政策转向。}
+        - {date: "T+6 到 18 月", title: 若衰退发生，多在此区间, note: 领先期很长。, hot: true}
+        - {date: "T+12 月", title: 出现陡峭化, note: 往往比倒挂本身更接近衰退起点。}
+        - {date: "衰退后", title: 曲线快速陡峭化, note: 政策大幅放松。}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "提前 6 个月", t: "太早\n无法据此操作"}
+        - {v: "12 到 18 个月", t: "历史上常见区间"}
+        - {v: "从未倒挂", t: "也可能出现衰退"}
+  links:
+    - {to: finance.bond.yield-curve, reason: 基础概念：曲线形态由什么决定}
+    - {to: hotspot.event.fed-cut-2026, reason: 关联：本轮曲线重定价的案例}
+
+- id: hotspot.data.cftc-positions
+  domain: hotspot
+  track: data
+  title: 持仓报告怎么看
+  one_liner: 多头持仓创新高，是看涨还是危险信号？
+  key_points:
+    - 持仓反映已建立的仓位，不代表未来方向
+    - 极端拥挤的持仓本身就是风险
+  difficulty: 3
+  tags: [持仓, 情绪]
+  order: 16
+  updated_at: 2026-09-07
+  source: 主要期货市场持仓报告与交易所周度披露，截至 2026-09-07
+  recipe: [prose, dataviz, compare, flow, timeline]
+  blocks:
+    - {type: prose, label: 定义, body: "持仓报告披露不同类别参与者的多空头寸。它告诉你**谁已经站在哪一边**，而拥挤的仓位意味着一旦方向反转，平仓会自我强化。"}
+    - type: dataviz
+      label: 净多头的周期变化
+      chart: line
+      xLabel: 周
+      yLabel: 净多头持仓 万手
+      xTicks: ["1", "3", "5", "7", "9", "11"]
+      series: [{name: 净多头, points: [8, 14, 22, 31, 38, 44]}]
+      source: 示意数据，仅用于说明拥挤度的累积
+    - type: timeline
+      label: 拥挤仓位如何解除
+      events:
+        - {date: "累积期", title: 净多头持续上升, note: 价格同步走高。}
+        - {date: "极端期", title: 创出历史高位, note: 新增买盘变少。, hot: true}
+        - {date: "触发期", title: 出现利空消息, note: 缺少接盘，跌幅更大。}
+        - {date: "解除期", title: 多头集中平仓, note: 价格快速回落。}
+    - type: compare
+      label: 两类参与者的区别
+      columns: ["", 商业持仓, 非商业持仓]
+      rows:
+        - [身份, 生产商与消费商, 基金与投机资金]
+        - [目的, 套期保值, 方向性交易]
+        - [怎么用, 用于判断实货压力, 用于判断情绪与拥挤度]
+    - type: flow
+      label: 怎么把持仓读成信号
+      steps:
+        - {label: 看绝对水平, note: 当前净多头处于历史什么位置}
+        - {label: 看变化速度, note: 一周内是否急剧堆积}
+        - {label: 看价格配合, note: 增仓上涨还是增仓滞涨}
+        - {label: 判断拥挤度, note: 极端时反而要警惕反向}
+  links:
+    - {to: hotspot.event.opec-cut, reason: 关联：原油市场的持仓与供给事件}
+    - {to: finance.quant.backtest-overfitting, reason: 延伸：拥挤度也是失效的一种形式}
+
+- id: hotspot.data.northbound-flow
+  domain: hotspot
+  track: data
+  title: 北向资金流向
+  one_liner: 北向净流入，就能跟进吗？
+  key_points:
+    - 资金流向是结果，不是原因
+    - 要区分配置型与交易型的差异
+  difficulty: 2
+  tags: [资金流, 股票]
+  order: 17
+  updated_at: 2026-09-13
+  source: 交易所互联互通资金流向披露，截至 2026-09-13
+  recipe: [prose, dataviz, timeline, pitfall, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "互联互通机制的每日资金净流入是**事后统计**。它反映的是当天的交易结果，而交易可能同时对冲、调仓或被动跟随指数，不一定代表方向性看多。"}
+    - type: dataviz
+      label: 净流入与后续走势
+      chart: bar
+      xLabel: 单周净流入区间
+      yLabel: 次月上涨概率 %
+      xTicks: ["大幅流出", "小幅流出", "小幅流入", "大幅流入"]
+      series: [{name: 上涨概率, points: [48, 51, 52, 50]}]
+      source: 示意数据，仅用于说明相关性很弱
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "单日几十亿", t: "不到成交额的 1%\n噪声就来自这个量级"}
+        - {v: "单周数百亿", t: "接近常态水平\n本身不构成信号"}
+        - {v: "持仓数万亿", t: "存量远大于流量\n日度变化只是零头"}
+    - {type: pitfall, label: 误区, wrong: 跟着北向资金买就能赚钱。, right: 它们在信息、期限与约束上都与你不同，且数据是滞后的。, why: 资金流向是交易结果，不是预测信号。}
+    - type: timeline
+      label: 一笔外资的三种动机
+      events:
+        - {date: "阶段一", title: 配置型建仓, note: 按指数权重分批买入，周期以年计。}
+        - {date: "阶段二", title: 交易型博弈, note: 持有期以天计，进出频繁。, hot: true}
+        - {date: "阶段三", title: 被动调仓, note: 指数调整带来的机械买入与卖出。}
+  links:
+    - {to: finance.equity.market-cap, reason: 基础概念：指数加权与被动资金的关系}
+    - {to: hotspot.data.valuation-percentile, reason: 延伸：更可比的估值指标}
+
+- id: hotspot.data.credit-impulse
+  domain: hotspot
+  track: data
+  title: 信用脉冲
+  one_liner: 一个比社融更领先的指标，是怎么算的？
+  key_points:
+    - 信用脉冲看的是新增信贷的增速，而非存量
+    - 它领先实体需求大约两到三个季度
+  difficulty: 3
+  tags: [信用, 领先指标]
+  order: 18
+  updated_at: 2026-09-17
+  source: 人民银行信贷收支表与社融增量数据，截至 2026-09-17
+  recipe: [prose, formula, dataviz, flow, timeline]
+  blocks:
+    - {type: prose, label: 定义, body: "信用脉冲衡量**新增信用占 GDP 比重的同比变化**。区别在于它关注**增量**——存量社融增速高，但如果增量在放缓，对需求的支撑其实在减弱。"}
+    - type: formula
+      label: 定义式
+      latex: CI_t = \frac{NewCredit_t}{GDP_t} - \frac{NewCredit_{t-4}}{GDP_{t-4}}
+      note: 用同比变化剔除季节性，得到信用的边际强度
+      symbols:
+        - {s: NewCredit_t, m: 当期新增信用}
+        - {s: GDP_t, m: 当期名义 GDP}
+    - type: dataviz
+      label: 信用脉冲领先于实体需求
+      chart: line
+      xLabel: 季度
+      xTicks: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"]
+      yLabel: 指数化
+      series:
+        - {name: 信用脉冲, points: [0.4, 1.8, 2.6, 1.9, 0.8, -0.2]}
+        - {name: 实体需求（滞后两季）, points: [1.2, 1.5, 2.4, 2.8, 2.1, 1]}
+      source: 示意数据，仅用于说明领先关系
+    - type: flow
+      label: 为什么它会领先
+      steps:
+        - {label: 信用先扩张, note: 资金先到企业手上}
+        - {label: 投资与生产跟进, note: 需要几个季度}
+        - {label: 收入与消费改善, note: 传导到终端}
+        - {label: 数据体现, note: 此时脉冲已回落}
+    - type: timeline
+      label: 一个信用脉冲周期
+      events:
+        - {date: "第 1 到 2 季", title: 政策放松，脉冲见底回升, note: 信贷先行放量。}
+        - {date: "第 3 到 5 季", title: 脉冲见顶, note: 实体需求开始感受到。, hot: true}
+        - {date: "第 6 到 8 季", title: 实体数据见顶, note: 脉冲已回落一段。}
+        - {date: "之后", title: 脉冲转负, note: 增长动能随之减弱。}
+  links:
+    - {to: hotspot.data.social-financing, reason: 前置：社融是它的原料}
+    - {to: econ.macro.monetary-transmission, reason: 基础概念：信用如何传导到实体}
+    - {to: hotspot.event.china-property-policy, reason: 案例：政策组合拳在信用脉冲上的体现}
+
+- id: hotspot.data.inventory-cycle
+  domain: hotspot
+  track: data
+  title: 库存周期
+  one_liner: 库存还在增加，为什么说是好事？
+  key_points:
+    - 关键看库存是被动累积还是主动建立
+    - 主动补库阶段利润弹性最大
+  difficulty: 2
+  tags: [库存, 周期]
+  order: 19
+  updated_at: 2026-09-18
+  source: 工业企业产成品存货与营业收入月度数据，截至 2026-09-18
+  recipe: [prose, formula, dataviz, compare, timeline]
+  blocks:
+    - {type: prose, label: 定义, body: "库存周期把需求与库存的组合分成四段。**库存上升可以是坏消息**（需求太弱导致被动累积），也可以是**好消息**（预期需求好转而主动补库存）。" }
+    - type: compare
+      label: 四个阶段
+      columns: ["", 需求, 库存, 含义]
+      rows:
+        - [主动补库, 上升, 上升, 景气最好]
+        - [被动补库, 下降, 上升, 需求转弱信号]
+        - [主动去库, 下降, 下降, 压力释放中]
+        - [被动去库, 上升, 下降, 复苏前夜]
+    - type: dataviz
+      label: 营收与库存的方向组合
+      chart: line
+      xLabel: 月份
+      yLabel: 同比 %
+      xTicks: ["1", "2", "3", "4", "5", "6"]
+      series:
+        - {name: 营业收入, points: [-1.2, 0.4, 2.1, 3.4, 3.8, 3.1]}
+        - {name: 产成品存货, points: [4.6, 5.1, 5.8, 6.2, 5.4, 4.2]}
+      source: 示意数据，仅用于说明两者的错位
+    - type: formula
+      label: 库存为什么会变
+      latex: '\Delta \text{库存} = \text{生产} - \text{销售}'
+      note: 库存上升只说明「生产大于销售」。销售在升是**主动补库**（看好需求），销售在降是**被动累积**（卖不动）。同一个正号，两种含义——所以库存必须和需求方向一起读。
+      symbols:
+        - {s: '\Delta \text{库存}', m: 产成品存货的变动}
+        - {s: '\text{生产}', m: 当期产出}
+        - {s: '\text{销售}', m: 当期需求（营收）}
+    - type: timeline
+      label: 一轮周期有多长、市场提前多久
+      events:
+        - {date: "3 到 4 年", title: 完整周期长度, note: 长度比幅度稳定得多，是判断位置的主要依据。}
+        - {date: "持续 4 到 6 季", title: 主动补库阶段, note: 量价齐升，周期行业超额收益最集中的窗口。, hot: true}
+        - {date: "领先 1 到 2 季", title: 补库确认早于盈利改善, note: 财报滞后，高频开工与价格数据更早见底。}
+        - {date: "去库后期", title: 数据最差的时候开始布局, note: 市场会提前交易下一轮补库。}
+  links:
+    - {to: hotspot.data.pmi-reading, reason: 前置：景气指标的读法}
+    - {to: econ.macro.gdp-three-ways, reason: 基础概念：存货投资是 GDP 的一部分}
+
+- id: hotspot.data.valuation-percentile
+  domain: hotspot
+  track: data
+  title: 估值分位
+  one_liner: PE 处于历史 90% 分位，就一定贵吗？
+  key_points:
+    - 分位依赖历史区间，区间选错结论就错
+    - 要结合盈利周期与利率环境一起看
+  difficulty: 2
+  tags: [估值, 数据]
+  order: 20
+  updated_at: 2026-09-19
+  source: 主要指数估值与历史分位统计，截至 2026-09-19
+  recipe: [prose, formula, dataviz, timeline, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "估值分位把当前估值放进历史区间里排序。**问题在于区间的选择**——过去十年包含了一轮完整周期，还是只有一段趋势？不同区间会得出完全不同的结论。"}
+    - type: dataviz
+      label: 同一指数在不同区间下的分位
+      chart: bar
+      xLabel: 回溯区间
+      yLabel: 当前估值分位 %
+      xTicks: ["近 3 年", "近 5 年", "近 10 年", "全历史"]
+      series: [{name: 分位, points: [88, 72, 54, 46]}]
+      source: 示意数据，仅用于说明区间选择的影响
+    - type: formula
+      label: 分位是怎么算出来的
+      latex: '\text{分位} = \frac{\#\{t \in T : PE_t \le PE_{now}\}}{\#\{t \in T\}}'
+      note: 分子是区间 T 内估值不高于当前的天数，分母是区间总天数。**T 一换结果就变**，所以分位只是区间内的相对位置，不是结论。利率环境、盈利周期、行业结构变化都会让历史区间失去可比性。
+      symbols:
+        - {s: 'T', m: 你选择的历史区间}
+        - {s: 'PE_t', m: 第 t 日的市盈率}
+        - {s: 'PE_{now}', m: 当前市盈率}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "低于 30%", t: "历史偏低\n先确认盈利没恶化"}
+        - {v: "40-60%", t: "中枢附近\n信息量有限"}
+        - {v: "高于 80%", t: "历史偏高\n需要增长兑现"}
+    - type: timeline
+      label: 高分位之后通常发生什么
+      events:
+        - {date: "进入高分位", title: 估值达到历史 80% 分位以上, note: 需要盈利持续兑现才能维持。}
+        - {date: "兑现期", title: 盈利跟上则消化估值, note: 横盘等待，时间换空间。, hot: true}
+        - {date: "证伪期", title: 盈利不及预期, note: 估值与盈利双杀。}
+        - {date: "回落期", title: 分位回到中枢附近, note: 重新具备吸引力。}
+  links:
+    - {to: finance.equity.pe-ratio, reason: 基础概念：市盈率怎么读}
+    - {to: hotspot.data.credit-impulse, reason: 延伸：估值背后的流动性与信用环境}

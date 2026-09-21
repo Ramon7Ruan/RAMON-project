@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-electron/
+release/
+.DS_Store
+*.log
+
+# 本地工具状态（项目记忆等），不属于代码，也常含个人备注
+.workbuddy/
+
+# 注意：content-dist/ 必须提交 —— 它是 jsDelivr 分发的发布产物本身

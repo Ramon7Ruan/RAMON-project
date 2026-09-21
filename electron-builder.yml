@@ -1,0 +1,42 @@
+appId: com.ramon.recall
+productName: Recall
+copyright: Recall
+
+directories:
+  output: release
+  buildResources: build
+
+# 裁剪 Framework 内的语言包：electron-builder 的 electronLanguages 在 Electron 44
+# 上静默失效（它只清 Contents/Resources，而语言包在 framework 内部），详见 tools/after-pack.js
+afterPack: tools/after-pack.js
+
+# 只打包我们自己产出的代码：渲染层已被 vite 打成 bundle，
+# 运行期不需要 node_modules，包体因此小很多。
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - package.json
+
+# 内置内容：首启内容库为空时从这里导入，保证离线装完即有内容（PRD §4.5 A2/A8）
+extraResources:
+  - from: content-dist/concepts.jsonl
+    to: content-dist/concepts.jsonl
+
+asar: true
+
+mac:
+  category: public.app-category.education
+  icon: build/icon.icns
+  target:
+    - target: dir
+      arch: arm64
+  # Electron 自带 200+ 语言包，约 74MB；本 App 只用中英两种。
+  # 注意：electronLanguages 是**平台级**选项，放顶层不会生效。
+  electronLanguages:
+    - en
+    - zh_CN
+  # 本地自用，不做代码签名（首次打开如被拦，右键打开即可）
+  identity: null
+
+extraMetadata:
+  main: dist-electron/app/main.js

@@ -1,0 +1,1067 @@
+# 金融学 24 个概念（股票 7 / 债券 6 / 基金 5 / 量化 6）
+# 差异化约束：本区每个概念必须包含 formula / calc / dataviz（可计算、可比、可查）
+
+# ============================== 股票 ==============================
+
+- id: finance.equity.pe-ratio
+  domain: finance
+  track: equity
+  title: 市盈率
+  one_liner: 20 倍市盈率，到底算贵还是便宜？
+  key_points:
+    - 市盈率等于股价除以每股收益，回答几年回本
+    - 必须先确认盈利口径与周期位置
+  difficulty: 1
+  tags: [估值, 股票]
+  order: 1
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, compare, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "市盈率 = 股价 / 每股收益。它回答的是**按当前盈利水平多少年赚回本金**。但脱离盈利的**质量与增速**看这个数字，几乎一定误判。"}
+    - type: formula
+      label: 常见衍生口径
+      latex: PE_{TTM} = \frac{P}{EPS_{TTM}}
+      note: 滚动市盈率用最近四个季度；静态用上一完整年度；预测用一致预期
+      symbols:
+        - {s: P, m: 当前股价}
+        - {s: 'EPS_{TTM}', m: 最近四个季度每股收益}
+    - type: dataviz
+      label: 历史分位怎么读
+      chart: bar
+      xLabel: 估值区间
+      yLabel: 出现频率
+      xTicks: ["<10x", "10-15x", "15-20x", "20-25x", "25-30x", ">30x"]
+      series: [{name: 历史分布, points: [6, 14, 23, 18, 11, 7]}]
+      source: 示意数据，仅用于说明分位思路
+    - {type: pitfall, label: 误区, wrong: 市盈率低于同行就等于便宜。, right: 要先确认盈利口径、周期位置与一次性损益是否可比。, why: 低估值有时是市场对盈利不可持续的正确定价。}
+    - type: compare
+      label: 为什么不通用
+      columns: ["", 低市盈率, 高市盈率]
+      rows:
+        - [常见原因一, 盈利处于周期高点, 市场预期高增长]
+        - [常见原因二, 行业前景黯淡, 盈利暂时被压低]
+        - [判断要点, 盈利能否持续, 增速能否兑现]
+  links:
+    - {to: finance.equity.pb-ratio, reason: 对比：盈利为负时该看什么}
+    - {to: econ.micro.market-structure, reason: 延伸：定价能力如何体现在估值上}
+    - {to: finance.equity.dcf-valuation, reason: 对照：相对估值与绝对估值各自的适用边界}
+
+- id: finance.equity.pb-ratio
+  domain: finance
+  track: equity
+  title: 市净率
+  one_liner: 盈利为负的公司，用什么估值？
+  key_points:
+    - 市净率等于市值除以净资产，适合重资产行业
+    - 高市净率意味着市场认可净资产的盈利能力
+  difficulty: 2
+  tags: [估值, 股票]
+  order: 2
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, compare, case]
+  blocks:
+    - {type: prose, label: 定义, body: "市净率 = 市值 / 净资产。它的好处是**分母比盈利稳定**，在亏损或周期底部仍可用；代价是它假设账面价值反映了真实价值。"}
+    - type: formula
+      label: 与净资产收益率的关系
+      latex: PB = ROE \times PE
+      note: 高 PB 只有在高 ROE 能持续时才合理
+      symbols:
+        - {s: PB, m: 市净率}
+        - {s: ROE, m: 净资产收益率}
+        - {s: PE, m: 市盈率}
+    - type: compare
+      label: 两个估值指标怎么选
+      columns: ["", 市盈率, 市净率]
+      rows:
+        - [分母稳定性, 波动大，可能为负, 相对稳定]
+        - [适用行业, 轻资产、盈利稳定, 银行、地产、重资产]
+        - [失效场景, 亏损或周期底部, 资产质量不实]
+    - type: dataviz
+      label: 不同行业的市净率差异
+      chart: bar
+      xLabel: 行业
+      yLabel: 市净率中位数
+      xTicks: [银行, 地产, 制造, 消费, 软件]
+      series: [{name: 市净率, points: [0.6, 0.9, 1.8, 3.4, 6.2]}]
+      source: 示意数据，仅用于说明行业差异
+    - type: case
+      label: 微案例
+      title: 银行为什么长期破净
+      nums: [{label: 市净率, v: 0.6}, {label: 净资产收益率, v: 9%}]
+      body: 市场担心的是资产质量——账面净资产里可能藏着未充分暴露的不良贷款。破净不是免费的午餐，而是对资产真实性的折价。
+  links:
+    - {to: finance.equity.pe-ratio, reason: 对比：盈利口径的另一面}
+    - {to: finance.equity.roe-dupont, reason: 前置：净资产收益率由什么决定}
+
+- id: finance.equity.dividend-yield
+  domain: finance
+  track: equity
+  title: 股息率
+  one_liner: 股息率 5%，比存款划算吗？
+  key_points:
+    - 股息率等于每股分红除以股价，是现金回报
+    - 高股息要看分红能否持续，别只看当期
+  difficulty: 1
+  tags: [分红, 股票]
+  order: 3
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "股息率 = 每股分红 / 股价。它是**真金白银的现金回报**，不像盈利那样容易被会计处理影响，但前提是分红能持续。"}
+    - type: formula
+      label: 股息率与派息率
+      latex: DY = \frac{DPS}{P}, \quad Payout = \frac{DPS}{EPS}
+      note: 股息率是给你的回报率，派息率是公司分掉多少利润
+      symbols:
+        - {s: DPS, m: 每股分红}
+        - {s: P, m: 股价}
+        - {s: Payout, m: 派息率}
+    - type: dataviz
+      label: 股息率与派息率的组合
+      chart: bar
+      xLabel: 组合类型
+      yLabel: 数值
+      xTicks: ["高股息+低派息", "高股息+高派息", "低股息+低派息", "低股息+高派息"]
+      series: [{name: 股息率 %, points: [5.2, 6.8, 1.1, 0.6]}]
+      source: 示意数据，仅用于说明组合差异
+    - {type: pitfall, label: 误区, wrong: 股息率高就是好股票。, right: 派息率过高可能意味着公司没有更好的再投资机会，或是分红来自一次性收益。, why: 分红是否可持续，取决于现金流而不是分红率本身。}
+    - type: case
+      label: 微案例
+      title: 高股息的两家公司
+      nums: [{label: A 公司派息率, v: 45%}, {label: B 公司派息率, v: 110%}]
+      body: A 用当年利润的一部分分红，可持续；B 分掉了超过全年利润，靠动用留存收益或举债维持，不可持续。
+  links:
+    - {to: finance.equity.buyback, reason: 对比：另一种把现金还给股东的方式}
+    - {to: finance.equity.pe-ratio, reason: 延伸：估值与现金回报一起看}
+
+- id: finance.equity.roe-dupont
+  domain: finance
+  track: equity
+  title: ROE 与杜邦分解
+  one_liner: 两家 ROE 都是 15%，为什么质量差很远？
+  key_points:
+    - ROE 拆成利润率、周转率、杠杆三块
+    - 靠杠杆堆出来的 ROE 质量最差
+  difficulty: 2
+  tags: [财务, 股票]
+  order: 4
+  updated_at: 2026-09-21
+  recipe: [prose, formula, compare, calc]
+  blocks:
+    - {type: prose, label: 定义, body: "杜邦分解把 ROE 拆成三块：**赚得厚不厚、转得快不快、借得多不多**。同样 15% 的 ROE，来源不同，可持续性完全不同。"}
+    - type: formula
+      label: 三因子分解
+      latex: ROE = \frac{Net}{Sales} \times \frac{Sales}{Assets} \times \frac{Assets}{Equity}
+      note: 依次是净利率、总资产周转率、权益乘数
+      symbols:
+        - {s: 净利率, m: 每 1 元收入赚多少}
+        - {s: 周转率, m: 每 1 元资产产生多少收入}
+        - {s: 权益乘数, m: 资产是净资产的几倍}
+    - type: compare
+      label: 三种 15% 的 ROE
+      columns: ["", 高净利率型, 高周转型, 高杠杆型]
+      rows:
+        - [典型行业, 品牌消费, 零售与渠道, 银行与地产]
+        - [可持续性, 取决于定价权, 取决于运营效率, 取决于融资环境]
+        - [风险点, 品牌老化, 规模瓶颈, 利率与信用]
+    - type: calc
+      label: 迷你计算器 · 拖动即算
+      calc: duration
+      inputs:
+        - {key: c, label: 票息率, min: 0, max: 12, step: 0.1, v: 3, unit: "%"}
+        - {key: n, label: 剩余期限, min: 1, max: 30, step: 1, v: 10, unit: 年}
+        - {key: y, label: 到期收益率, min: 0.5, max: 12, step: 0.1, v: 4, unit: "%"}
+  links:
+    - {to: finance.equity.pb-ratio, reason: 延伸：高 ROE 才支撑得起高市净率}
+    - {to: finance.bond.credit-spread, reason: 延伸：高杠杆如何传导到融资成本}
+
+- id: finance.equity.market-cap
+  domain: finance
+  track: equity
+  title: 总市值与自由流通市值
+  one_liner: 指数按哪个市值加权，结果差多少？
+  key_points:
+    - 总市值算全部股本，自由流通市值只算可交易部分
+    - 加权口径决定了指数被谁主导
+  difficulty: 2
+  tags: [指数, 股票]
+  order: 5
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, compare, flow]
+  blocks:
+    - {type: prose, label: 定义, body: "总市值 = 股价 × 总股本；自由流通市值 = 股价 × **实际可自由交易的股本**。用哪个加权，直接决定指数里谁说了算。"}
+    - type: formula
+      label: 两种市值
+      latex: MC_{total} = P \times Shares, \quad MC_{free} = P \times Shares_{free}
+      note: 自由流通股本剔除了控股股东、战略投资者与限售部分
+      symbols:
+        - {s: Shares, m: 总股本}
+        - {s: 'Shares_{free}', m: 自由流通股本}
+    - type: compare
+      label: 两种加权的差别
+      columns: ["", 总市值加权, 自由流通市值加权]
+      rows:
+        - [谁占权重高, 大股东持股集中的公司, 实际可流通盘大的公司]
+        - [换手影响, 调仓冲击成本高, 相对可控]
+        - [常见使用者, 部分综合指数, 多数可投资指数]
+    - type: dataviz
+      label: 同一家公司两种口径的差异
+      chart: bar
+      xLabel: 口径
+      yLabel: 市值 亿元
+      xTicks: [总市值, 自由流通市值, 实际可交易]
+      series: [{name: 市值, points: [3200, 1150, 980]}]
+      source: 示意数据，仅用于说明口径差异
+    - type: flow
+      label: 指数是怎么编制出来的
+      steps:
+        - {label: 划定样本空间, note: 行业与流动性筛选}
+        - {label: 确定加权方式, note: 总市值还是自由流通}
+        - {label: 设置权重上限, note: 防止单一股票占比过高}
+        - {label: 定期调整, note: 每季度或每半年}
+  links:
+    - {to: finance.fund.tracking-error, reason: 延伸：指数基金如何跟上加权口径}
+    - {to: finance.equity.buyback, reason: 延伸：回购如何改变股本}
+    - {to: hotspot.data.northbound-flow, reason: 延伸：被动资金的买卖由指数加权方式决定}
+
+- id: finance.equity.buyback
+  domain: finance
+  track: equity
+  title: 股份回购
+  one_liner: 公司回购股份，到底是谁赚了？
+  key_points:
+    - 回购减少股本，同样的利润分给更少的股东
+    - 只有在股价低于内在价值时回购才真正创造价值
+  difficulty: 2
+  tags: [回购, 股东回报]
+  order: 6
+  updated_at: 2026-09-21
+  recipe: [prose, formula, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "回购是公司用现金买回自己的股份并注销。它和分红一样是**把现金还给股东**，区别在于分红是直接给钱，回购是**减少股份数**、推高每股指标。"}
+    - type: formula
+      label: 回购对每股收益的影响
+      latex: EPS' = \frac{Net}{Shares - Repurchased}
+      note: 分子不变、分母变小，EPS 机械上升
+      symbols:
+        - {s: Net, m: 净利润}
+        - {s: Repurchased, m: 回购注销的股数}
+    - type: case
+      label: 微案例
+      title: 高价回购的代价
+      nums: [{label: 回购均价, v: 42 元}, {label: 内在价值估计, v: 28 元}]
+      body: 用高于内在价值的价格回购，等于把留下的股东的钱转移给了卖出的股东。EPS 上去了，价值却下降了。
+    - {type: pitfall, label: 误区, wrong: 回购公告就是利好。, right: 要同时看回购价格、资金来源与是否真的注销。, why: 借钱回购、高价回购、回购后用于股权激励而不注销，都不是对股东有利的回购。}
+  links:
+    - {to: finance.equity.dividend-yield, reason: 对比：另一种股东回报方式}
+    - {to: finance.equity.market-cap, reason: 延伸：股本变化如何影响市值口径}
+
+- id: finance.equity.dcf-valuation
+  domain: finance
+  track: equity
+  title: 现金流折现
+  one_liner: 一个估值模型，为什么能算出天差地别的结果？
+  key_points:
+    - 折现率与永续增长率各动 1%，结果差很多
+    - 模型只反映假设，不产生答案
+  difficulty: 3
+  tags: [估值, 模型]
+  order: 7
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "现金流折现把未来现金流按风险调整后的利率折回今天。**输入决定输出**——它不是一个能给出「真值」的模型，而是一个把假设显性化的工具。"}
+    - type: formula
+      label: 两阶段模型
+      latex: V = \sum_{t=1}^{n} \frac{FCF_t}{(1+r)^t} + \frac{FCF_{n+1}}{(r - g)(1+r)^n}
+      note: 永续增长项对结果影响极大，且要求 r 大于 g
+      symbols:
+        - {s: FCF_t, m: 第 t 年的自由现金流}
+        - {s: r, m: 折现率，通常用加权平均资本成本}
+        - {s: g, m: 永续增长率}
+    - type: curve
+      label: 折现率的敏感性
+      xLabel: 折现率 r %
+      yLabel: 估值倍数
+      xDomain: [6, 16]
+      yDomain: [0, 30]
+      note: 折现率从 8% 升到 12%，估值可能腰斩。
+      series:
+        - {name: 估值倍数, points: [[6, 26], [8, 18.5], [10, 13.5], [12, 10.2], [14, 7.8], [16, 6]]}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "±1 个点", t: "r 或 g 微调\n估值变动 10-20%"}
+        - {v: "±2 个点", t: "常用敏感性区间\n结果可能差一倍"}
+        - {v: "假设失真", t: "模型再精细也没用"}
+  links:
+    - {to: finance.equity.roe-dupont, reason: 前置：盈利能力从哪来}
+    - {to: finance.bond.duration, reason: 类比：久期也是对未来现金流的加权}
+
+# ============================== 债券 ==============================
+
+- id: finance.bond.duration
+  domain: finance
+  track: bond
+  title: 久期
+  one_liner: 利率变动 1%，债券价格会变动多少？
+  key_points:
+    - 修正久期 7 年约等于利率涨 1% 价格跌 7%
+    - 票息越低、期限越长，久期越大
+  difficulty: 2
+  tags: [债券, 利率风险]
+  order: 8
+  updated_at: 2026-09-21
+  recipe: [prose, formula, scale, calc]
+  blocks:
+    - {type: prose, label: 定义, body: "久期是债券价格对利率**敏感度的加权平均到期时间**。修正久期 7 年，意味着利率上升 1%，价格大约下跌 7%。"}
+    - type: formula
+      label: 修正久期
+      latex: D_{mod} = \frac{D_{mac}}{1 + y}
+      note: 价格变动近似：ΔP/P 约等于 负的修正久期乘以 Δy
+      symbols:
+        - {s: 'D_{mod}', m: 修正久期，单位年}
+        - {s: 'D_{mac}', m: 麦考利久期}
+        - {s: y, m: 到期收益率}
+    - type: calc
+      label: 迷你计算器 · 拖动即算
+      calc: duration
+      inputs:
+        - {key: c, label: 票息率, min: 0, max: 12, step: 0.1, v: 3, unit: "%"}
+        - {key: n, label: 剩余期限, min: 1, max: 30, step: 1, v: 10, unit: 年}
+        - {key: y, label: 到期收益率, min: 0.5, max: 12, step: 0.1, v: 4, unit: "%"}
+    - type: scale
+      label: 数量级锚定
+      ticks:
+        - {v: "1 年", t: "短债\n利率风险很小"}
+        - {v: "7 年", t: "中久期\n利率 +1% 价格约 -7%"}
+        - {v: "25 年", t: "长债\n利率 +1% 价格约 -24%"}
+  links:
+    - {to: finance.bond.convexity, reason: 延伸：久期是线性近似，凸性修正它}
+    - {to: finance.bond.yield-curve, reason: 延伸：整条曲线的形状由什么决定}
+    - {to: hotspot.event.svb-collapse, reason: 案例：久期错配遇上利率快速上行的极端后果}
+
+- id: finance.bond.yield-curve
+  domain: finance
+  track: bond
+  title: 收益率曲线
+  one_liner: 短端利率降了，长端为什么不动？
+  key_points:
+    - 短端由政策决定，长端由增长与通胀预期决定
+    - 倒挂领先衰退，但不是必然
+  difficulty: 2
+  tags: [债券, 利率, 曲线]
+  order: 9
+  updated_at: 2026-09-21
+  recipe: [prose, dataviz, compare, case]
+  blocks:
+    - {type: prose, label: 定义, body: "收益率曲线把**不同期限**的国债收益率连成一条线。它的形状反映市场对未来的预期，也决定了银行与保险这类机构的盈利空间。"}
+    - type: dataviz
+      label: 三种典型形态
+      chart: line
+      xLabel: 剩余期限
+      yLabel: 到期收益率 %
+      xTicks: ["3M", "1Y", "3Y", "5Y", "10Y", "30Y"]
+      series:
+        - {name: 常态陡峭, points: [1.8, 2, 2.3, 2.6, 3, 3.3]}
+        - {name: 平坦, points: [2.6, 2.65, 2.7, 2.72, 2.75, 2.8]}
+        - {name: 倒挂, points: [4.6, 4.4, 4, 3.7, 3.5, 3.6]}
+      source: 示意数据，仅用于说明形态差异
+    - type: compare
+      label: 形态对应的含义
+      columns: ["", 陡峭, 平坦或倒挂]
+      rows:
+        - [市场预期, 增长与通胀回升, 增长走弱或即将降息]
+        - [银行息差, 扩大，利好放贷, 收窄，压制放贷意愿]
+        - [历史经验, 复苏早期常见, 衰退前常见信号]
+    - type: case
+      label: 微案例
+      title: 倒挂不等于立刻衰退
+      nums: [{label: 历史领先时间, v: 6 到 18 个月}, {label: 出现过假信号, v: 有}]
+      body: 倒挂作为信号有较长领先期，且历史上出现过假信号。把它当作概率信息而不是结论更稳妥。
+  links:
+    - {to: finance.bond.duration, reason: 前置：单只债券的利率敏感度}
+    - {to: econ.macro.inflation-expectation, reason: 延伸：长端定价里的预期成分}
+    - {to: hotspot.event.japan-ycc-exit, reason: 案例：政策直接干预长端、退出时会发生什么}
+    - {to: hotspot.data.yield-curve-inversion, reason: 延伸：倒挂是曲线形态里最受关注的一种}
+
+- id: finance.bond.credit-spread
+  domain: finance
+  track: bond
+  title: 信用利差
+  one_liner: 同样是债，为什么有的多给 2% 利息？
+  key_points:
+    - 利差是违约风险与流动性的定价
+    - 利差走阔往往先于违约事件
+  difficulty: 2
+  tags: [信用, 债券]
+  order: 10
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, dataviz, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "信用利差是**信用债收益率减去同期限国债收益率**。它是对违约风险与流动性风险的补偿，也是市场情绪最灵敏的温度计之一。"}
+    - type: formula
+      label: 利差的构成
+      latex: Spread = Y_{credit} - Y_{gov} \approx PD \times LGD + Liquidity
+      note: 拆成违约概率、违约损失与流动性补偿三部分
+      symbols:
+        - {s: PD, m: 违约概率}
+        - {s: LGD, m: 违约损失率}
+        - {s: Liquidity, m: 流动性补偿}
+    - type: dataviz
+      label: 利差在不同阶段的走势
+      chart: line
+      xLabel: 阶段
+      yLabel: 利差 bp
+      xTicks: [平稳期, 担忧期, 承压期, 违约期, 修复期]
+      series: [{name: 信用利差, points: [85, 120, 190, 320, 210]}]
+      source: 示意数据，仅用于说明利差的周期特征
+    - {type: pitfall, label: 误区, wrong: 利差高就是捡便宜的机会。, right: 要先分清是流动性冲击还是基本面恶化。, why: 两者的应对完全不同：前者会修复，后者可能继续恶化。}
+    - type: curve
+      label: 利差与违约概率
+      xLabel: 隐含违约概率 %
+      yLabel: 合理利差 bp
+      xDomain: [0, 12]
+      yDomain: [0, 900]
+      note: 假设回收率 40%，利差至少要覆盖预期损失。
+      series:
+        - {name: 覆盖预期损失的利差, points: [[0, 0], [1, 60], [3, 180], [6, 360], [9, 540], [12, 720]]}
+  links:
+    - {to: finance.bond.default-recovery, reason: 前置：违约概率与回收率怎么估}
+    - {to: finance.equity.roe-dupont, reason: 关联：杠杆如何影响信用资质}
+    - {to: hotspot.event.evergrande-default, reason: 案例：信用利差从定价失效到重新定价的全过程}
+
+- id: finance.bond.convexity
+  domain: finance
+  track: bond
+  title: 凸性
+  one_liner: 久期算出的价格变动，为什么总是不太准？
+  key_points:
+    - 久期是线性近似，凸性补上弯曲的部分
+    - 凸性对持有人有利：涨得多、跌得少
+  difficulty: 3
+  tags: [债券, 利率风险]
+  order: 11
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, compare, case]
+  blocks:
+    - {type: prose, label: 定义, body: "价格与收益率的关系是**弯曲**的，久期只取了切线。凸性描述这条曲线的弯曲程度，**利率变动越大，久期误差越大**。"}
+    - type: formula
+      label: 二阶近似
+      latex: \frac{\Delta P}{P} \approx -D_{mod} \Delta y + \frac{1}{2} C (\Delta y)^2
+      note: 凸性项永远为正，所以实际跌幅小于久期估计
+      symbols:
+        - {s: 'D_{mod}', m: 修正久期}
+        - {s: C, m: 凸性}
+    - type: curve
+      label: 久期近似与实际价格
+      xLabel: 收益率变动 %
+      yLabel: 价格
+      xDomain: [-3, 3]
+      yDomain: [80, 130]
+      note: 收益率大幅变动时，直线（久期）与曲线（实际）分道扬镳。
+      series:
+        - {name: 实际价格, points: [[-3, 124], [-2, 115], [-1, 107.5], [0, 100], [1, 93], [2, 86.5], [3, 80.5]]}
+        - {name: 久期线性近似, points: [[-3, 121], [-2, 114], [-1, 107], [0, 100], [1, 93], [2, 86], [3, 79]], dash: 5}
+    - type: compare
+      label: 凸性的两面
+      columns: ["", 高凸性, 低凸性]
+      rows:
+        - [利率下行时, 涨得更多, 涨得较少]
+        - [利率上行时, 跌得更少, 跌得更多]
+        - [代价, 通常收益率更低, 收益率补偿更高]
+    - type: case
+      label: 微案例
+      title: 大幅降息时谁涨得多
+      nums: [{label: 两只债久期, v: 都是 8 年}, {label: 凸性, v: 高 / 低}]
+      body: 久期相同的两只债，在收益率大幅下行时，凸性高的那只涨得更多；上行时跌得更少。凸性不是免费的，它体现在更低的到期收益率上。
+  links:
+    - {to: finance.bond.duration, reason: 前置：一阶近似是什么}
+    - {to: finance.bond.yield-curve, reason: 延伸：曲线形态变化如何影响凸性}
+
+- id: finance.bond.repo
+  domain: finance
+  track: bond
+  title: 回购与资金面
+  one_liner: 隔夜利率突然跳升，市场在发生什么？
+  key_points:
+    - 回购是拿债券做抵押短期借钱
+    - 资金利率跳升通常意味着抵押品或额度紧张
+  difficulty: 3
+  tags: [货币市场, 流动性]
+  order: 12
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, flow, case]
+  blocks:
+    - {type: prose, label: 定义, body: "回购是**以债券为抵押的短期融资**。它是货币市场的基础设施，也是观察资金面松紧最直接的窗口——抵押品够不够、额度紧不紧，都会反映在利率上。"}
+    - type: formula
+      label: 回购利率与抵押折扣
+      latex: Cash = \frac{Face \times (1 - Haircut)}{1 + r \times \frac{d}{365}}
+      note: 折扣率越高，同样面值能借到的钱越少
+      symbols:
+        - {s: Face, m: 抵押债券面值}
+        - {s: Haircut, m: 抵押折扣率}
+        - {s: r, m: 回购利率}
+        - {s: d, m: 期限天数}
+    - type: dataviz
+      label: 资金面的季节性波动
+      chart: line
+      xLabel: 时点
+      yLabel: 隔夜利率 %
+      xTicks: [月初, 月中, 税期, 月末, 季末, 年末]
+      series: [{name: 隔夜利率, points: [1.6, 1.7, 2.4, 2.8, 3.6, 4.5]}]
+      source: 示意数据，仅用于说明季节性规律
+    - type: flow
+      label: 资金紧张是怎么形成的
+      steps:
+        - {label: 缴税或缴准, note: 资金从银行体系流出}
+        - {label: 大行融出减少, note: 自身头寸也紧}
+        - {label: 非银借不到钱, note: 只能高价融入}
+        - {label: 利率跳升, note: 传导到债券与股票估值}
+    - type: case
+      label: 微案例
+      title: 一次季末资金紧张
+      nums: [{label: 隔夜利率峰值, v: 5.8%}, {label: 平日水平, v: 1.7%}]
+      body: 季末考核叠加缴准，大行减少融出，非银只能高价融入。这类波动通常几天内回落，但会传导到债券与股票估值。
+  links:
+    - {to: hotspot.data.social-financing, reason: 关联：实体融资的另一面}
+    - {to: finance.bond.yield-curve, reason: 延伸：资金面如何影响短端}
+    - {to: hotspot.event.us-debt-ceiling, reason: 案例：上限僵局如何直接冲击短期融资市场}
+
+- id: finance.bond.default-recovery
+  domain: finance
+  track: bond
+  title: 违约与回收率
+  one_liner: 违约了就一定血本无归吗？
+  key_points:
+    - 预期损失等于违约概率乘以违约损失率
+    - 回收率在行业与抵押结构之间差异极大
+  difficulty: 3
+  tags: [信用, 风险]
+  order: 13
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, case]
+  blocks:
+    - {type: prose, label: 定义, body: "违约不等于归零。**回收率**决定了实际损失多少，而它取决于抵押物、清偿顺序与处置效率。把违约概率和回收率分开估，是信用分析的基本功。"}
+    - type: formula
+      label: 预期损失
+      latex: EL = PD \times LGD = PD \times (1 - RR)
+      note: 信用利差至少要覆盖预期损失，剩余部分才是风险溢价
+      symbols:
+        - {s: PD, m: 违约概率}
+        - {s: LGD, m: 违约损失率}
+        - {s: RR, m: 回收率}
+    - type: dataviz
+      label: 清偿顺序与回收率
+      chart: bar
+      xLabel: 债务类型
+      yLabel: 回收率 %
+      xTicks: [有抵押, 优先无抵押, 次级, 次级后段]
+      series: [{name: 平均回收率, points: [72, 45, 28, 11]}]
+      source: 示意数据，仅用于说明清偿顺序的影响
+    - type: case
+      label: 微案例
+      title: 同一发行人不同层级的差别
+      nums: [{label: 违约概率, v: 15%}, {label: 有抵押回收率, v: 70%}, {label: 次级回收率, v: 15%}]
+      body: 同一个发行人，两笔债的预期损失差了近 4 倍。分级不是为了区分"会不会违约"，而是"违约后能拿回多少"。
+  links:
+    - {to: finance.bond.credit-spread, reason: 前置：利差里定价了什么}
+    - {to: econ.micro.opportunity-cost, reason: 延伸：风险补偿也是一种机会成本}
+
+# ============================== 基金 ==============================
+
+- id: finance.fund.tracking-error
+  domain: finance
+  track: fund
+  title: 跟踪误差
+  one_liner: 指数基金「跟得紧」怎么量化？
+  key_points:
+    - 跟踪误差是收益差的标准差，衡量稳不稳
+    - 跟踪偏离度是收益差的均值，衡量准不准
+  difficulty: 2
+  tags: [基金, 指数]
+  order: 14
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "跟踪误差是基金收益率与标的指数收益率之差的**波动率**。注意它衡量的是**偏离的稳定性**，不是偏离的平均大小——后者叫跟踪偏离度。"}
+    - type: formula
+      label: 两个易混指标
+      latex: TE = \sigma(r_p - r_b), \quad TD = \overline{r_p - r_b}
+      note: 一个是标准差，一个是均值
+      symbols:
+        - {s: TE, m: 跟踪误差，偏离的波动}
+        - {s: TD, m: 跟踪偏离度，偏离的中枢}
+    - type: dataviz
+      label: 日度偏离分布
+      chart: bar
+      xLabel: 日度偏离区间
+      yLabel: 天数
+      xTicks: ["<-30bp", "-30~-10", "-10~0", "0~10", "10~30", ">30bp"]
+      series: [{name: 样本天数, points: [3, 22, 51, 48, 19, 4]}]
+      source: 示意数据，仅用于说明分布形态
+    - type: scale
+      label: 数量级锚定
+      ticks:
+        - {v: "0.05%", t: "优秀\n基本贴合指数"}
+        - {v: "0.20%", t: "一般\n多数指数基金水平"}
+        - {v: "0.50%", t: "偏差明显\n需要看成因"}
+  links:
+    - {to: finance.fund.expense-ratio, reason: 前置：偏离的主要来源之一是费率}
+    - {to: finance.quant.ic-icir, reason: 延伸：同类"均值与稳定性"的判读思路}
+    - {to: finance.fund.etf-premium, reason: 延伸：折溢价与跟踪误差同源，都来自申赎与流动性}
+    - {to: finance.quant.sharpe-sortino, reason: 对照：同样用标准差，一个衡量收益质量，一个衡量跟踪偏离}
+
+- id: finance.fund.expense-ratio
+  domain: finance
+  track: fund
+  title: 费率
+  one_liner: 一年差 0.5% 的费率，十年差多少？
+  key_points:
+    - 费率是确定的负收益，收益是不确定的
+    - 长期持有下，费率差异会被复利放大
+  difficulty: 1
+  tags: [基金, 成本]
+  order: 15
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, flow, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "基金费率包括管理费、托管费、销售服务费与交易佣金。**它是唯一确定的负收益**——市场收益不确定，费率一定扣。"}
+    - type: formula
+      label: 费率的长期侵蚀
+      latex: V_T = V_0 (1 + r - f)^T
+      note: 同样的毛收益，费率每高 0.5%，长期净值差距被复利放大
+      symbols:
+        - {s: r, m: 毛收益率}
+        - {s: f, m: 年化费率}
+        - {s: T, m: 持有年数}
+    - type: dataviz
+      label: 十年后的差距
+      chart: bar
+      xLabel: 年化费率
+      yLabel: 十年后净值 以 1 为基准
+      xTicks: ["0.2%", "0.5%", "1.0%", "1.5%", "2.0%"]
+      series: [{name: 净值, points: [2.23, 2.13, 1.98, 1.83, 1.7]}]
+      source: 示意数据，假设毛收益 9%
+    - {type: pitfall, label: 误区, wrong: 费率低的就是好基金。, right: 低费率是必要条件，不是充分条件；要看跟踪质量或主动管理能力。, why: 省下的费率只有配上合格的策略才有意义。}
+    - type: flow
+      label: 费用在净值里的体现
+      steps:
+        - {label: 每日计提, note: 按年费率摊到每一天}
+        - {label: 直接从净值扣, note: 不体现在交易记录里}
+        - {label: 复利累积, note: 十年后被显著放大}
+        - {label: 对比基准时, note: 必须用同一口径}
+  links:
+    - {to: finance.fund.tracking-error, reason: 延伸：费率如何体现为跟踪偏离}
+    - {to: finance.fund.fof-double-fee, reason: 延伸：还有一层被忽视的费率}
+
+- id: finance.fund.active-share
+  domain: finance
+  track: fund
+  title: 主动份额
+  one_liner: 一只基金到底有多主动？
+  key_points:
+    - 主动份额衡量持仓偏离基准的程度
+    - 主动份额低却收主动管理费，值得警惕
+  difficulty: 2
+  tags: [基金, 基准]
+  order: 16
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, compare]
+  blocks:
+    - {type: prose, label: 定义, body: "主动份额是**持仓权重与基准权重之差的绝对值之和的一半**。它衡量一只基金究竟偏离基准多远——名字里有「主动」不代表它真的主动。"}
+    - type: formula
+      label: 主动份额
+      latex: AS = \frac{1}{2} \sum_{i} |w_i - b_i|
+      note: 完全复制指数则为 0，完全不重叠则为 1
+      symbols:
+        - {s: w_i, m: 基金中第 i 只股票的权重}
+        - {s: b_i, m: 基准中第 i 只股票的权重}
+    - type: compare
+      label: 主动份额与收费的匹配
+      columns: ["", 高主动份额, 低主动份额]
+      rows:
+        - [承担风险, 偏离基准风险大, 接近指数表现]
+        - [合理收费, 主动管理费有依据, 更像指数增强或复制]
+        - [需要问, 超额收益能否持续, 为什么不直接买指数]
+    - type: dataviz
+      label: 主动份额分布
+      chart: bar
+      xLabel: 主动份额区间
+      yLabel: 基金数量
+      xTicks: ["0-20%", "20-40%", "40-60%", "60-80%", "80-100%"]
+      series: [{name: 数量, points: [18, 24, 15, 8, 5]}]
+      source: 示意数据，仅用于说明分布偏斜
+  links:
+    - {to: finance.fund.expense-ratio, reason: 延伸：收费要与主动性匹配}
+    - {to: finance.equity.market-cap, reason: 前置：基准是怎么加权出来的}
+
+- id: finance.fund.fof-double-fee
+  domain: finance
+  track: fund
+  title: 双重收费
+  one_liner: 买了 FOF，为什么成本比想象中高？
+  key_points:
+    - FOF 在底层基金费率之上再收一层
+    - 关键看底层基金是否免收或返还管理费
+  difficulty: 2
+  tags: [基金, 成本]
+  order: 17
+  updated_at: 2026-09-21
+  recipe: [prose, formula, compare, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "FOF 投资于其他基金，投资者要**付两层管理费**。行业常见做法是底层基金对 FOF 部分免收或返还管理费，但并非所有产品都这样。"}
+    - type: formula
+      label: 综合费率
+      latex: f_{total} = f_{FOF} + \sum_{j} w_j \times f_j
+      note: 若底层免收，第二项大幅下降
+      symbols:
+        - {s: 'f_{FOF}', m: FOF 自身管理费}
+        - {s: w_j, m: 第 j 只底层基金的权重}
+        - {s: f_j, m: 第 j 只底层基金的管理费}
+    - type: case
+      label: 微案例
+      title: 两个产品的综合费率
+      nums: [{label: 产品 A 综合费率, v: 0.85%}, {label: 产品 B 综合费率, v: 1.95%}]
+      body: 表面管理费都在 0.8% 左右，差别出在底层是否免收。选 FOF 一定要看"是否双重收费"这一条。
+    - {type: pitfall, label: 误区, wrong: 只看 FOF 自己标称的管理费就够了。, right: 必须看招募说明书里对底层基金收费的安排。, why: 双层收费的总额往往体现在底层，不在显眼处。}
+    - type: compare
+      label: 单层与双层
+      columns: ["", 单层收费, 双层收费]
+      rows:
+        - [费用来源, 只有本基金, 本基金加底层基金]
+        - [典型差距, 0.5 到 1 个百分点, 1.5 到 2.5 个百分点]
+        - [是否合理, 看策略, 只有当底层确实免收时才合理]
+  links:
+    - {to: finance.fund.expense-ratio, reason: 前置：费率如何长期侵蚀收益}
+    - {to: finance.fund.active-share, reason: 延伸：收费要给主动管理找到依据}
+
+- id: finance.fund.etf-premium
+  domain: finance
+  track: fund
+  title: ETF 折溢价
+  one_liner: ETF 市价明明高于净值，为什么还能买？
+  key_points:
+    - 折溢价反映二级市场供需与套利效率
+    - 溢价买入等于先亏掉溢价那部分
+  difficulty: 2
+  tags: [ETF, 套利]
+  order: 18
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, flow, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "ETF 有**两个价格**：二级市场的交易价与基金份额净值。两者偏离就是折溢价，套利机制会把它们拉回，但**拉回需要时间与额度**。"}
+    - type: formula
+      label: 折溢价率
+      latex: Premium = \frac{P_{market} - NAV}{NAV}
+      note: 正值是溢价，负值是折价
+      symbols:
+        - {s: 'P_{market}', m: 二级市场交易价}
+        - {s: NAV, m: 基金份额净值}
+    - type: dataviz
+      label: 跨境 ETF 的溢价更常见
+      chart: bar
+      xLabel: ETF 类型
+      yLabel: 平均溢价率 %
+      xTicks: [宽基, 行业, 债券, 跨境, 商品]
+      series: [{name: 平均溢价, points: [0.05, 0.08, 0.04, 1.8, 0.35]}]
+      source: 示意数据，仅用于说明溢价的结构性差异
+    - type: flow
+      label: 套利如何抹平价差
+      steps:
+        - {label: 出现溢价, note: 买的人多于卖的人}
+        - {label: 套利者申购, note: 用净值拿份额}
+        - {label: 二级市场卖出, note: 赚取价差}
+        - {label: 溢价收敛, note: 直到无利可图}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0.1% 内", t: "正常摩擦\n无需在意"}
+        - {v: "1% 左右", t: "需要注意\n会影响择时结果"}
+        - {v: "5% 以上", t: "多为额度受限\n追高非常危险"}
+  links:
+    - {to: finance.fund.tracking-error, reason: 延伸：折溢价也算一种跟踪偏离}
+    - {to: finance.bond.repo, reason: 关联：套利资金从哪来}
+
+# ============================== 量化 ==============================
+
+- id: finance.quant.ic-icir
+  domain: finance
+  track: quant
+  title: IC 与 ICIR
+  one_liner: 一个因子有预测力，怎么用数字证明？
+  key_points:
+    - IC 看方向对不对，ICIR 看稳不稳
+    - 经验阈值 IC 大于 0.03，IR 大于 0.5
+  difficulty: 3
+  tags: [量化, 因子]
+  order: 19
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, compare, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "IC 是因子值与下期收益的横截面相关系数，衡量方向对不对；ICIR 是 IC 的均值除以标准差，衡量这个方向**稳不稳**。方向对但不稳的因子，实盘会亏钱。"}
+    - type: formula
+      label: ICIR
+      latex: ICIR = \frac{mean(IC)}{std(IC)} \times \sqrt{T}
+      note: 用期数平方根做年化
+      symbols:
+        - {s: mean(IC), m: 各期 IC 的均值}
+        - {s: std(IC), m: 各期 IC 的标准差}
+        - {s: T, m: 期数}
+    - type: dataviz
+      label: 两个因子的 IC 序列
+      chart: bar
+      xLabel: 期数
+      yLabel: IC
+      xTicks: ["1", "2", "3", "4", "5", "6", "7", "8"]
+      series:
+        - {name: 因子 A ICIR 高, points: [0.05, 0.04, 0.06, 0.05, 0.04, 0.05, 0.06, 0.05]}
+        - {name: 因子 B ICIR 低, points: [0.14, 0.11, 0.03, 0.01, 0.09, 0.05, 0.12, 0.04]}
+      source: 示意数据，仅用于说明 IC 稳定性差异
+    - type: scale
+      label: 经验阈值
+      ticks:
+        - {v: "0.01", t: "基本无预测力"}
+        - {v: "0.03", t: "值得进一步研究"}
+        - {v: "0.05", t: "较强\n需警惕过拟合"}
+    - type: compare
+      label: 两个指标的分工
+      columns: ["", IC, ICIR]
+      rows:
+        - [衡量什么, 方向对不对, 方向稳不稳]
+        - [受极端值影响, 大, 相对小]
+        - [单独看会怎样, 高 IC 也可能不可交易, 低 IC 也可能稳定可赚]
+  links:
+    - {to: econ.econometrics.endogeneity, reason: 关联：同一类因果识别问题}
+    - {to: finance.quant.backtest-overfitting, reason: 延伸：IC 高也可能是过拟合}
+    - {to: finance.quant.factor-neutralization, reason: 延伸：中性化前后 IC 的变化，能看出因子混进了多少风格}
+
+- id: finance.quant.factor-neutralization
+  domain: finance
+  track: quant
+  title: 因子中性化
+  one_liner: 剔掉行业和市值之后，因子还剩多少？
+  key_points:
+    - 中性化是为了排除其他因子的混入
+    - 中性化后 IC 下降不一定说明因子变差
+  difficulty: 3
+  tags: [量化, 因子]
+  order: 20
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, dataviz, compare]
+  blocks:
+    - {type: prose, label: 定义, body: "中性化是把因子值对行业、市值等**已知风格做回归，取残差**。目的是回答：这个因子扣掉行业和市值的贡献后，还有没有独立信息？"}
+    - type: formula
+      label: 回归取残差
+      latex: f_i = \alpha + \beta_1 Ind_i + \beta_2 \ln(Size_i) + \varepsilon_i
+      note: 用残差作为中性化后的因子值
+      symbols:
+        - {s: f_i, m: 原始因子值}
+        - {s: Ind_i, m: 行业虚拟变量}
+        - {s: '\varepsilon_i', m: 中性化后的因子}
+    - type: compare
+      label: 中性化前后
+      columns: ["", 未中性化, 已中性化]
+      rows:
+        - [IC 水平, 通常更高, 会下降]
+        - [信息纯度, 混入行业与市值暴露, 只剩独立信息]
+        - [组合暴露, 可能重仓某个行业, 行业分布更均衡]
+    - type: dataviz
+      label: 中性化前后的 IC 变化
+      chart: bar
+      xLabel: 处理方式
+      yLabel: IC
+      xTicks: [原始, 对市值中性, 对行业中性, 双重中性]
+      series: [{name: IC, points: [0.061, 0.048, 0.039, 0.031]}]
+      source: 示意数据，仅用于说明 IC 会随中性化下降
+    - type: curve
+      label: 中性化强度与 IC 的关系
+      xLabel: 中性化强度
+      yLabel: IC
+      xDomain: [0, 4]
+      yDomain: [0, 0.08]
+      note: 过度中性化会把因子的真实信息也一起抹掉。
+      series:
+        - {name: IC 走势, points: [[0, 0.061], [1, 0.048], [2, 0.038], [3, 0.026], [4, 0.014]]}
+  links:
+    - {to: finance.quant.ic-icir, reason: 前置：怎么衡量因子的预测力}
+    - {to: econ.econometrics.multicollinearity, reason: 延伸：共线性与混入效应的区别}
+
+- id: finance.quant.backtest-overfitting
+  domain: finance
+  track: quant
+  title: 回测过拟合
+  one_liner: 回测曲线很漂亮，实盘为什么亏？
+  key_points:
+    - 试的次数越多，偶然找到好参数的概率越大
+    - 样本外与样本内差距是最直接的体检指标
+  difficulty: 3
+  tags: [量化, 回测]
+  order: 21
+  updated_at: 2026-09-21
+  recipe: [prose, formula, dataviz, pitfall, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "回测过拟合是**在历史数据上反复调参，直到结果好看**。问题是历史只有一个，试得足够多，总能找到一个碰巧漂亮的参数组合。"}
+    - type: formula
+      label: 多重检验下的假发现
+      latex: P(\text{至少一次显著}) = 1 - (1 - \alpha)^n
+      note: 试 20 次、每次显著性 5%，出现假信号的概率接近 64%
+      symbols:
+        - {s: '\alpha', m: 单次检验的显著性水平}
+        - {s: n, m: 尝试次数}
+    - type: dataviz
+      label: 样本内与样本外的分岔
+      chart: line
+      xLabel: 年份
+      yLabel: 累计净值
+      xTicks: ["1", "2", "3", "4", "5", "6", "7", "8"]
+      series:
+        - {name: 样本内拟合, points: [1.2, 1.5, 1.95, 2.5, 3.2, 4.1, 5.2, 6.6]}
+        - {name: 样本外实际, points: [1.15, 1.3, 1.4, 1.35, 1.25, 1.1, 0.95, 0.82]}
+      source: 示意数据，仅用于说明典型形态
+    - {type: pitfall, label: 误区, wrong: 回测年化 40% 的策略值得上实盘。, right: 先问试了多少组参数、样本外表现如何、逻辑能否解释。, why: 没有经济学逻辑支撑的高回测收益，多数是数据挖掘的产物。}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "试用 5 组", t: "假发现概率约 23%"}
+        - {v: "试用 20 组", t: "假发现概率约 64%"}
+        - {v: "试用 100 组", t: "几乎必然找到好看结果"}
+  links:
+    - {to: finance.quant.walk-forward, reason: 解法：用滚动前推替代单次回测}
+    - {to: finance.quant.ic-icir, reason: 前置：因子本身的稳定性怎么看}
+
+- id: finance.quant.turnover-cost
+  domain: finance
+  track: quant
+  title: 换手与交易成本
+  one_liner: 年化 25% 的策略，扣掉成本还剩多少？
+  key_points:
+    - 成本等于换手率乘以单边成本，是确定的减法
+    - 高换手策略对成本假设极其敏感
+  difficulty: 2
+  tags: [量化, 成本]
+  order: 22
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, case, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "交易成本包括佣金、印花税、冲击成本与机会成本。**换手率越高，成本越确定地吃掉收益**，而收益本身是不确定的。"}
+    - type: formula
+      label: 成本拖累
+      latex: Cost_{annual} = Turnover \times (Fee + Impact) \times 2
+      note: 买卖各算一次，所以乘 2
+      symbols:
+        - {s: Turnover, m: 年化换手率}
+        - {s: Fee, m: 佣金与税费}
+        - {s: Impact, m: 冲击成本}
+    - type: curve
+      label: 换手越高，净收益衰减越快
+      xLabel: 年化换手率 倍
+      yLabel: 成本拖累 %
+      xDomain: [0, 12]
+      yDomain: [0, 12]
+      note: 假设单边成本 0.15%，换手 10 倍就意味着约 3% 的年度拖累。
+      series:
+        - {name: 成本拖累, points: [[1, 0.3], [2, 0.6], [4, 1.2], [6, 1.8], [8, 2.4], [10, 3], [12, 3.6]]}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0.1%", t: "大盘股\n冲击成本小"}
+        - {v: "0.3%", t: "中盘股\n常见水平"}
+        - {v: "1%+", t: "小盘或流动性差\n成本吃掉大半收益"}
+    - type: case
+      label: 微案例
+      title: 一个高换手策略的实测
+      nums: [{label: 回测年化, v: 28%}, {label: 年化换手, v: 12 倍}, {label: 实盘年化, v: 9.4%}]
+      body: 差距几乎全部来自成本。回测里假设的 0.1% 单边成本，在中小盘上实际可能到 0.35%。
+  links:
+    - {to: finance.quant.backtest-overfitting, reason: 前置：先确认收益是真的}
+    - {to: finance.fund.expense-ratio, reason: 对比：费率与交易成本都是确定的减法}
+
+- id: finance.quant.sharpe-sortino
+  domain: finance
+  track: quant
+  title: 夏普与索提诺
+  one_liner: 两个策略夏普一样，该选哪个？
+  key_points:
+    - 索提诺只把下行波动当风险
+    - 收益分布偏斜时，两者会明显分歧
+  difficulty: 2
+  tags: [量化, 风险调整]
+  order: 23
+  updated_at: 2026-09-21
+  recipe: [prose, formula, compare, flow, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "夏普比率用**全部波动**做分母，索提诺只用**下行波动**。上涨带来的波动在夏普里是「风险」，在索提诺里不是——这是两者的根本区别。"}
+    - type: formula
+      label: 两个比率
+      latex: Sharpe = \frac{R_p - R_f}{\sigma_p}, \quad Sortino = \frac{R_p - R_f}{\sigma_{down}}
+      note: 分母一个是总标准差，一个只算下行部分
+      symbols:
+        - {s: '\sigma_p', m: 收益的总标准差}
+        - {s: '\sigma_{down}', m: 下行标准差}
+    - type: compare
+      label: 什么情况下分歧大
+      columns: ["", 夏普更适合, 索提诺更适合]
+      rows:
+        - [收益分布, 接近对称, 明显右偏]
+        - [典型策略, 市场中性, 趋势跟踪]
+        - [关注点, 整体波动控制, 避免大幅回撤]
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0.5 左右", t: "勉强覆盖风险"}
+        - {v: "1.0", t: "常见可接受水平"}
+        - {v: "2.0 以上", t: "优秀\n先确认不是过拟合"}
+    - type: flow
+      label: 该用哪个的三步判断
+      steps:
+        - {label: 看收益分布, note: 是否明显偏斜}
+        - {label: 看策略类型, note: 对冲还是方向性}
+        - {label: 同时报两个, note: 分歧大时说明分布不对称}
+  links:
+    - {to: finance.fund.tracking-error, reason: 关联：标准差在不同场景下的用法}
+    - {to: finance.quant.backtest-overfitting, reason: 延伸：比率高也可能是过拟合}
+
+- id: finance.quant.walk-forward
+  domain: finance
+  track: quant
+  title: 滚动前推验证
+  one_liner: 一次回测不够，那怎么做才算够？
+  key_points:
+    - 每次只用当时可得的数据定参数
+    - 把多段样本外的结果连起来看
+  difficulty: 3
+  tags: [量化, 验证]
+  order: 24
+  updated_at: 2026-09-21
+  recipe: [prose, dataviz, flow, pitfall, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "滚动前推是**用滚动窗口反复做样本内定参、样本外验证**，再把所有样本外区段连起来评估。它模拟了实盘中你只能知道「到此刻为止」的信息这一约束。"}
+    - type: flow
+      label: 滚动前推的流程
+      steps:
+        - {label: 取一段样本内, note: 确定参数}
+        - {label: 紧接的样本外, note: 用固定参数运行}
+        - {label: 窗口向前滚动, note: 重新定参}
+        - {label: 拼接所有样本外, note: 得到真实感的业绩}
+    - type: dataviz
+      label: 拼接后的样本外曲线
+      chart: line
+      xLabel: 滚动期数
+      yLabel: 累计净值
+      xTicks: ["1", "2", "3", "4", "5", "6"]
+      series:
+        - {name: 样本外拼接, points: [1, 1.06, 1.11, 1.09, 1.18, 1.24]}
+        - {name: 单次样本内, points: [1, 1.18, 1.42, 1.55, 1.9, 2.2]}
+      source: 示意数据，仅用于说明两者的落差
+    - {type: pitfall, label: 误区, wrong: 多切几段样本外就等于稳健了。, right: 如果每次定参都偷偷用了全样本信息，切再多段也无效。, why: 关键是信息可得性的时点，而不是切分次数。}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "3 到 5 段", t: "最低限度\n只能做方向判断"}
+        - {v: "8 到 12 段", t: "较可靠\n能看出稳定性"}
+        - {v: "20 段以上", t: "接近实盘体验\n但样本被大量占用"}
+  links:
+    - {to: finance.quant.backtest-overfitting, reason: 前置：要防的到底是什么}
+    - {to: finance.quant.ic-icir, reason: 延伸：因子层面的稳定性检验}
+    - {to: finance.quant.turnover-cost, reason: 前置：滚动前推必须把换手成本算进去，否则每段都虚高}

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>Recall · 金融知识复习 App 交互原型</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#FAFAF8;--surface:#FFFFFF;--surface-2:#F2F1ED;--surface-3:#E9E8E2;
+--text:#1F1E1C;--text-2:#6B6A65;--text-3:#9A9993;
+--border:rgba(0,0,0,.10);--border-2:rgba(0,0,0,.20);
+--brand:#2F6FB0;--brand-soft:rgba(47,111,176,.10);--brand-line:rgba(47,111,176,.30);
+--ok:#4C8A3F;--ok-soft:rgba(76,138,63,.12);
+--due:#C68A1E;--due-soft:rgba(198,138,30,.13);
+--bad:#B4453F;--bad-soft:rgba(180,69,63,.10);
+--up:#C0392B;--down:#2E7D32;
+}
+[data-theme="dark"]{
+--bg:#1A1A18;--surface:#242422;--surface-2:#2E2E2B;--surface-3:#3A3A36;
+--text:#EDEBE6;--text-2:#A5A39D;--text-3:#75736E;
+--border:rgba(255,255,255,.12);--border-2:rgba(255,255,255,.24);
+--brand:#6FA8DC;--brand-soft:rgba(111,168,220,.14);--brand-line:rgba(111,168,220,.36);
+--ok:#8FBF73;--ok-soft:rgba(143,191,115,.14);
+--due:#E0B050;--due-soft:rgba(224,176,80,.14);
+--bad:#E0857F;--bad-soft:rgba(224,133,127,.13);
+--up:#E0857F;--down:#86C07A;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+background:var(--bg);color:var(--text);font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.app{display:flex;height:100vh;overflow:hidden}
+
+.sidebar{width:208px;flex:0 0 208px;background:var(--surface-2);border-right:.5px solid var(--border);
+display:flex;flex-direction:column;padding:16px 12px}
+.brand{font-size:15px;font-weight:500;padding:4px 10px 16px;letter-spacing:.02em}
+.brand span{color:var(--text-3);font-weight:400;font-size:12px;display:block;margin-top:2px}
+.nav{display:flex;flex-direction:column;gap:1px}
+.nav-sep{height:1px;background:var(--border);margin:10px 10px}
+.nav-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;
+border-radius:8px;font-size:13.5px;color:var(--text-2);cursor:pointer;transition:background .12s}
+.nav-item:hover{background:var(--surface-3)}
+.nav-item.on{background:var(--brand-soft);color:var(--brand);font-weight:500}
+.nav-item .cnt{font-size:11.5px;color:var(--text-3)}
+.nav-item.on .cnt{color:var(--brand)}
+.side-foot{margin-top:auto;padding:12px 10px 4px;display:flex;align-items:center;gap:10px;
+border-top:.5px solid var(--border)}
+.ring{width:34px;height:34px;flex:0 0 34px}
+.side-foot .ft{font-size:11.5px;color:var(--text-3);line-height:1.4}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;flex:0 0 52px;display:flex;align-items:center;justify-content:space-between;
+padding:0 32px;border-bottom:.5px solid var(--border);background:var(--surface)}
+.crumb{font-size:12.5px;color:var(--text-3)}
+.crumb b{color:var(--text-2);font-weight:400}
+.badge{font-size:12px;color:var(--text-2);padding:4px 10px;border-radius:999px;
+border:.5px solid var(--border);cursor:pointer;background:var(--surface-2);white-space:nowrap}
+.badge:hover{border-color:var(--border-2)}
+.badge.new{color:var(--due);background:var(--due-soft);border-color:transparent}
+.badge i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--due);
+margin-right:6px;vertical-align:1px}
+.view{flex:1;overflow-y:auto;padding:32px 32px 80px}
+.page{max-width:760px;margin:0 auto}
+.page.wide{max-width:920px}
+
+.page-title{font-size:22px;font-weight:500;line-height:1.3}
+.page-sub{font-size:13px;color:var(--text-3);margin-top:4px}
+.sec-h{font-size:13px;font-weight:500;color:var(--text-2);margin:28px 0 10px}
+.card{background:var(--surface);border:.5px solid var(--border);border-radius:12px}
+.pad{padding:16px 18px}
+
+.hero{background:var(--surface);border:.5px solid var(--border);border-radius:12px;
+padding:18px 20px;display:flex;align-items:center;justify-content:space-between;
+cursor:pointer;transition:border-color .15s}
+.hero:hover{border-color:var(--brand-line)}
+.hero .hl{font-size:13px;color:var(--text-2)}
+.hero .hv{font-size:18px;font-weight:500;margin-top:3px}
+.hero .hv em{font-style:normal;color:var(--brand)}
+.hero .go{font-size:18px;color:var(--text-3)}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.dcard{background:var(--surface);border:.5px solid var(--border);border-radius:12px;
+padding:14px 16px;cursor:pointer;transition:border-color .15s}
+.dcard:hover{border-color:var(--brand-line)}
+.dcard .dt{font-size:14px;font-weight:500}
+.dcard .dn{font-size:12px;color:var(--text-3);margin-top:2px}
+.bar{height:4px;border-radius:2px;background:var(--surface-3);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:2px;background:var(--brand)}
+.dcard .dp{font-size:11.5px;color:var(--text-3);margin-top:6px}
+
+.rows{display:flex;flex-direction:column}
+.row{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;
+border-bottom:.5px solid var(--border);cursor:pointer}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--surface-2)}
+.dot{font-size:13px;line-height:1.5;flex:0 0 14px;text-align:center}
+.dot.unread{color:var(--text-3)}.dot.reading{color:var(--brand)}
+.dot.known{color:var(--ok)}.dot.review{color:var(--due)}
+.row .rt{flex:1;min-width:0}
+.row .rt b{font-weight:400;font-size:14px;display:block}
+.row .rt span{font-size:12.5px;color:var(--text-3);display:block;margin-top:2px;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .rdf{font-size:11.5px;color:var(--text-3);white-space:nowrap;padding-top:2px}
+
+.filters{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:14px 0 4px}
+.chip{font-size:12px;padding:3px 11px;border-radius:999px;border:.5px solid var(--border);
+color:var(--text-2);cursor:pointer;background:var(--surface)}
+.chip:hover{border-color:var(--border-2)}
+.chip.on{background:var(--brand-soft);color:var(--brand);border-color:transparent}
+
+.acc{margin-top:10px;border:.5px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+cursor:pointer;background:var(--surface-2)}
+.acc-head b{font-weight:500;font-size:13.5px}
+.acc-head .n{font-size:12px;color:var(--text-3);font-weight:400;margin-left:8px}
+.acc-head .ar{font-size:11px;color:var(--text-3)}
+.acc-body{border-top:.5px solid var(--border);display:none}
+.acc.open .acc-body{display:block}
+.acc.open .ar{transform:rotate(90deg)}
+.acc-body .row{border-bottom:.5px solid var(--border)}
+.acc-body .row:last-child{border-bottom:none}
+
+.c-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.c-title{font-size:22px;font-weight:500;line-height:1.3;margin-top:14px}
+.c-oneliner{font-size:15px;color:var(--text-2);margin-top:6px;line-height:1.5}
+.c-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);white-space:nowrap}
+.c-meta .fav{cursor:pointer;font-size:15px}
+.recipe{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:14px;
+padding-top:14px;border-top:.5px solid var(--border)}
+.recipe .rl{font-size:11.5px;color:var(--text-3);margin-right:2px}
+.rb{font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand)}
+.stale{font-size:11.5px;color:var(--due);background:var(--due-soft);padding:2px 9px;
+border-radius:999px;display:inline-block;margin-top:8px}
+
+.blk{margin-top:28px}
+.blk-label{font-size:11.5px;color:var(--text-3);margin-bottom:9px;letter-spacing:.04em}
+.prose{font-size:14px;line-height:1.75}
+.prose strong{font-weight:500;color:var(--text);background:var(--brand-soft);
+padding:0 3px;border-radius:3px}
+
+.formula-box{background:var(--surface-2);border-radius:12px;padding:20px 18px;text-align:center}
+.formula-box .fx{font-size:17px;font-family:"Times New Roman",Georgia,serif;
+font-style:italic;letter-spacing:.01em}
+.formula-box .fn{font-size:12px;color:var(--text-3);margin-top:8px;font-style:normal}
+.symtab{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:2px 20px}
+.symtab div{font-size:12.5px;color:var(--text-2);padding:4px 0;border-bottom:.5px solid var(--border)}
+.symtab b{font-weight:500;color:var(--text);font-family:"Times New Roman",serif;
+font-style:italic;margin-right:8px}
+
+.chart-wrap{background:var(--surface);border:.5px solid var(--border);border-radius:12px;
+padding:14px 12px 10px}
+.chart-wrap svg{display:block;width:100%;height:auto}
+.chart-src{font-size:11px;color:var(--text-3);text-align:right;margin-top:6px}
+.ctrl{display:flex;align-items:center;gap:10px;margin-top:10px;padding:0 6px}
+.ctrl label{font-size:12px;color:var(--text-2);white-space:nowrap}
+.ctrl input[type=range]{flex:1;accent-color:var(--brand)}
+.ctrl .cv{font-size:12px;color:var(--brand);font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+
+table.cmp{width:100%;border-collapse:collapse;font-size:13px;
+background:var(--surface);border:.5px solid var(--border);border-radius:12px;overflow:hidden}
+table.cmp th{background:var(--surface-2);text-align:left;font-weight:500;font-size:12.5px;
+padding:9px 14px;color:var(--text-2);border-bottom:.5px solid var(--border)}
+table.cmp td{padding:9px 14px;border-bottom:.5px solid var(--border);color:var(--text-2);vertical-align:top}
+table.cmp td:first-child{color:var(--text);font-weight:500}
+table.cmp tr:last-child td{border-bottom:none}
+
+.flow-row{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.flow-step{flex:1;min-width:0;background:var(--surface);border:.5px solid var(--border);
+border-radius:10px;padding:11px 12px;text-align:center}
+.flow-step b{display:block;font-size:12.5px;font-weight:500;line-height:1.4}
+.flow-step span{display:block;font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.4}
+.flow-arrow{flex:0 0 26px;display:flex;align-items:center;justify-content:center;
+color:var(--text-3);font-size:13px}
+
+.tl{position:relative;padding-left:24px}
+.tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:var(--border-2)}
+.tl-item{position:relative;padding:0 0 20px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-24px;top:6px;width:11px;height:11px;border-radius:50%;
+background:var(--surface);border:1.5px solid var(--brand)}
+.tl-item.hot .tl-dot{border-color:var(--due);background:var(--due-soft)}
+.tl-date{font-size:11.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.tl-body b{display:block;font-size:13.5px;font-weight:500;margin-top:1px}
+.tl-body span{display:block;font-size:12.5px;color:var(--text-2);margin-top:3px;line-height:1.6}
+
+.pitfall{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pf{border-radius:12px;padding:13px 15px;font-size:13px;line-height:1.65}
+.pf .pf-h{font-size:11.5px;margin-bottom:6px;letter-spacing:.03em}
+.pf-wrong{background:var(--bad-soft)}
+.pf-wrong .pf-h{color:var(--bad)}
+.pf-right{background:var(--ok-soft)}
+.pf-right .pf-h{color:var(--ok)}
+.pf-why{margin-top:10px;font-size:12.5px;color:var(--text-2);
+padding-left:11px;border-left:2px solid var(--border-2)}
+
+.case-card{background:var(--surface);border:.5px solid var(--border);border-left:2.5px solid var(--brand);
+border-radius:0 12px 12px 0;padding:14px 18px}
+.case-card .ct{font-size:13.5px;font-weight:500}
+.case-nums{display:flex;gap:26px;margin:10px 0 6px;flex-wrap:wrap}
+.case-nums div{font-size:12px;color:var(--text-3)}
+.case-nums b{display:block;font-size:17px;font-weight:500;color:var(--text);
+font-variant-numeric:tabular-nums;line-height:1.3}
+.case-card p{font-size:13px;color:var(--text-2);line-height:1.7}
+
+.scale-row{display:flex;gap:2px;margin-top:4px}
+.scale-tick{flex:1;background:var(--surface);border:.5px solid var(--border);
+padding:12px 13px;text-align:center}
+.scale-tick:first-child{border-radius:12px 0 0 12px}
+.scale-tick:last-child{border-radius:0 12px 12px 0}
+.scale-tick b{display:block;font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.scale-tick span{display:block;font-size:11.5px;color:var(--text-3);margin-top:5px;line-height:1.5}
+
+.calc-form{background:var(--surface);border:.5px solid var(--border);border-radius:12px;padding:16px 18px}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px}
+.cf label{font-size:12px;color:var(--text-2);display:flex;justify-content:space-between}
+.cf label b{font-weight:500;color:var(--brand);font-variant-numeric:tabular-nums}
+.cf input[type=range]{width:100%;accent-color:var(--brand);margin-top:6px}
+.calc-out{margin-top:16px;padding-top:14px;border-top:.5px solid var(--border);
+display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.calc-out div{font-size:11.5px;color:var(--text-3)}
+.calc-out b{display:block;font-size:19px;font-weight:500;color:var(--text);
+font-variant-numeric:tabular-nums;line-height:1.35}
+
+.links{margin-top:34px;padding-top:18px;border-top:.5px solid var(--border)}
+.links .lh{font-size:12px;color:var(--text-3);margin-bottom:8px}
+.lk{display:flex;align-items:baseline;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer}
+.lk:hover{background:var(--surface-2)}
+.lk .la{color:var(--brand);font-size:12px;flex:0 0 auto}
+.lk b{font-weight:400;font-size:13.5px}
+.lk span{font-size:12px;color:var(--text-3)}
+
+.action-bar{display:flex;gap:10px;margin-top:30px;padding-top:20px;border-top:.5px solid var(--border)}
+.btn{flex:1;text-align:center;padding:10px 14px;border-radius:9px;font-size:13.5px;cursor:pointer;
+border:.5px solid var(--border-2);background:var(--surface);color:var(--text);transition:background .12s}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+.btn.primary:hover{opacity:.9}
+.btn.sm{flex:0 0 auto;padding:6px 16px;font-size:12.5px}
+
+.rq-prog{height:3px;background:var(--surface-3);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.rq-prog i{display:block;height:100%;background:var(--brand);transition:width .25s}
+.rq-num{font-size:12px;color:var(--text-3);text-align:right;margin-bottom:48px}
+.rq-card{text-align:center;padding:52px 24px}
+.rq-card .rq-t{font-size:19px;font-weight:500}
+.rq-card .rq-o{font-size:14px;color:var(--text-2);margin-top:10px;line-height:1.6}
+.rq-hint{font-size:12px;color:var(--text-3);padding-bottom:64px;text-align:center}
+.rq-full{max-height:46vh;overflow-y:auto;background:var(--surface);border:.5px solid var(--border);
+border-radius:12px;padding:22px 26px;text-align:left}
+.rq-full .page{max-width:none}
+.rq-rate{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.rq-btn{padding:12px;border-radius:9px;text-align:center;cursor:pointer;font-size:13.5px;
+border:.5px solid var(--border-2);background:var(--surface)}
+.rq-btn:hover{background:var(--surface-2)}
+.rq-btn.b0{border-color:var(--bad);color:var(--bad)}
+.rq-btn.b1{border-color:var(--due);color:var(--due)}
+.rq-btn.b2{border-color:var(--ok);color:var(--ok)}
+
+.search-input{width:100%;padding:13px 16px;font-size:15px;border-radius:11px;
+border:.5px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;outline:none}
+.search-input:focus{border-color:var(--brand-line)}
+.srch-grp{font-size:11.5px;color:var(--text-3);margin:20px 0 6px;letter-spacing:.04em}
+mark{background:var(--due-soft);color:inherit;border-radius:2px;padding:0 2px}
+
+.set-sec{font-size:12px;color:var(--text-3);margin:26px 0 8px;letter-spacing:.05em}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:20px;
+padding:13px 18px;border-bottom:.5px solid var(--border);background:var(--surface)}
+.set-row:first-of-type{border-radius:12px 12px 0 0}
+.set-row:last-of-type{border-radius:0 0 12px 12px;border-bottom:.5px solid var(--border)}
+.set-box{border:.5px solid var(--border);border-radius:12px;overflow:hidden}
+.set-row .sl{font-size:13.5px}
+.set-row .sd{font-size:12px;color:var(--text-3);margin-top:2px}
+.set-row .sr{flex:0 0 auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2)}
+.seg{display:flex;border:.5px solid var(--border);border-radius:8px;overflow:hidden}
+.seg div{padding:5px 13px;font-size:12px;cursor:pointer;background:var(--surface)}
+.seg div.on{background:var(--brand);color:#fff}
+.upd-panel{margin-top:10px;padding:16px 18px;border-radius:12px;background:var(--surface);
+border:.5px solid var(--border);font-size:13px}
+.upd-panel .uh{font-weight:500;margin-bottom:8px}
+.upd-line{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-2);padding:4px 0}
+.empty{text-align:center;padding:64px 20px;color:var(--text-3);font-size:13.5px}
+.empty b{display:block;color:var(--text-2);font-weight:400;font-size:14px;margin-bottom:6px}
+.kcards{display:flex;flex-direction:column;gap:10px;padding:12px;background:var(--bg)}
+.kcard{background:var(--surface);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;
+cursor:pointer;transition:border-color .15s}
+.kcard:hover{border-color:var(--brand-line)}
+.kc-head{display:flex;align-items:center;gap:9px}
+.kc-head .dot{flex:0 0 14px}
+.kc-title{font-size:14.5px;font-weight:500;flex:1;min-width:0}
+.kc-diff{font-size:11px;color:var(--text-3);white-space:nowrap}
+.kc-detail{font-size:11.5px;color:var(--brand);background:var(--brand-soft);padding:3px 10px;
+border-radius:999px;white-space:nowrap}
+.kc-one{font-size:12.5px;color:var(--text-2);margin-top:7px;line-height:1.55}
+.kc-pts{list-style:none;margin-top:9px}
+.kc-pts li{font-size:12.5px;line-height:1.65;padding-left:15px;position:relative}
+.kc-pts li::before{content:"·";position:absolute;left:5px;color:var(--text-3);font-weight:500}
+.kc-recipe{display:flex;gap:5px;flex-wrap:wrap;margin-top:11px}
+.kc-recipe .rb{font-size:11px}
+.kc-stale{font-size:11px;color:var(--due);margin-top:9px}
+.backlink{font-size:12.5px;color:var(--brand);cursor:pointer;display:inline-block}
+.backlink:hover{text-decoration:underline}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:5px}
+::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Recall<span>金融知识复习</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <svg class="ring" viewBox="0 0 36 36" id="ring"></svg>
+      <div class="ft" id="ringTxt"></div>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb" id="crumb"></div>
+      <div class="badge" id="badge" onclick="go({name:'settings'})">内容 v2026.09.21</div>
+    </div>
+    <div class="view" id="view"></div>
+  </div>
+</div>
+
+<script>
+const TRACKS=[
+ {key:'macro',domain:'econ',label:'宏观经济'},
+ {key:'micro',domain:'econ',label:'微观经济'},
+ {key:'econometrics',domain:'econ',label:'计量经济'},
+ {key:'equity',domain:'finance',label:'股票'},
+ {key:'bond',domain:'finance',label:'债券'},
+ {key:'fund',domain:'finance',label:'基金'},
+ {key:'quant',domain:'finance',label:'量化'},
+ {key:'event',domain:'hotspot',label:'事件解剖'},
+ {key:'data',domain:'hotspot',label:'数据观察'}
+];
+const DOMAINS={econ:'经济学',finance:'金融学',hotspot:'世界热点'};
+
+var C=[
+{id:'econ.macro.monetary-transmission',domain:'econ',track:'macro',title:'货币政策传导机制',one:'央行降息，为什么企业不一定马上借钱？',diff:2,tags:['利率','政策','机制'],recipe:['prose','flow','case','pitfall'],blocks:[
+ {type:'prose',body:'央行降息，只是把资金的「**批发价**」压低了。要变成企业账上的「零售价」，中间要经过银行负债端、信贷定价、企业预期三道关，**每一道都可能漏损**。'},
+ {type:'flow',label:'传导链路',steps:[{label:'政策利率下调',note:'7 天逆回购利率'},{label:'银行资金成本下降',note:'负债端传导'},{label:'贷款利率下行',note:'LPR 报价调整'},{label:'企业投资意愿回升',note:'取决于预期回报率'}]},
+ {type:'case',label:'真实案例',title:'2024 年 LPR 下调之后',nums:[{label:'1 年期 LPR 累计下调',v:'20bp'},{label:'企业中长期贷款增速',v:'回落'}],body:'利率降了，但企业中长期贷款并没有同步放量。这说明卡点在链条的后半段——企业预期，而不是资金价格本身。'},
+ {type:'pitfall',label:'常见误区',wrong:'降息一定会刺激企业投资。',right:'只有当投资的预期回报率高于贷款利率时，企业才会借钱。',why:'传导链条的后半段取决于预期，而不是资金价格本身。'}],
+links:[{to:'econ.macro.liquidity-trap',reason:'对比：传到不动时的极端情形'},{to:'finance.bond.yield-curve',reason:'延伸：利率如何影响债券定价'}]},
+
+{id:'econ.macro.liquidity-trap',domain:'econ',track:'macro',title:'流动性陷阱',one:'利率降到接近零之后，货币政策还剩下什么？',diff:3,tags:['利率','货币政策'],recipe:['prose','curve','case','pitfall'],blocks:[
+ {type:'prose',body:'当利率已经降到接近零，人们预期**未来利率只会上升、债券价格只会跌**，于是宁可将钱留在手里，也不买债券。此时**货币需求曲线变成垂直的**——央行再多投放流动性，也无法把利率继续压下去。'},
+ {type:'curve',label:'货币需求与利率',xLabel:'货币供给 M',yLabel:'利率 r',xDomain:[0,10],yDomain:[0,10],note:'虚线为陷阱区间：曲线趋于垂直，M 增加而 r 几乎不动。',series:[
+   {name:'常规区间',points:[[1,8.4],[2,6.6],[3,5.2],[4.2,4.1],[5.5,3.3]],dash:0},
+   {name:'陷阱区间',points:[[5.5,3.3],[6.6,2.5],[7.4,1.7],[8.2,0.9],[9.2,0.4],[10,0.2]],dash:5}]},
+ {type:'case',label:'真实案例',title:'日本 1990 年代至今',nums:[{label:'政策利率',v:'≈0%'},{label:'持续时长',v:'20 年+'}],body:'基础货币大幅扩张，但信贷与物价长期低迷。政策工具从利率转向了量化宽松与收益率曲线控制。'},
+ {type:'pitfall',label:'常见误区',wrong:'央行印钱必然会带来通货膨胀。',right:'如果新增货币没有进入信贷与支出循环，它会沉淀为超额准备金。',why:'通胀的触发条件是货币进入实体支出，而非货币总量增加。'}],
+links:[{to:'econ.macro.monetary-transmission',reason:'前置：正常情况下的传导链条'},{to:'econ.macro.phillips-curve',reason:'延伸：通胀与失业的权衡关系'}]},
+
+{id:'econ.macro.phillips-curve',domain:'econ',track:'macro',title:'菲利普斯曲线',one:'通胀和失业之间，真的存在稳定的取舍吗？',diff:2,tags:['通胀','失业'],recipe:['prose','curve','timeline','pitfall'],blocks:[
+ {type:'prose',body:'最初的菲利普斯曲线是一条**稳定的负相关曲线**：失业率低时通胀高，反之亦然。但 1970 年代的**滞胀**打破了这个关系——通胀和失业同时高企，曲线整体右移，于是有了「附加预期的菲利普斯曲线」。'},
+ {type:'curve',label:'短期与长期',xLabel:'失业率 u',yLabel:'通胀率 π',xDomain:[0,10],yDomain:[0,10],note:'短期曲线可沿曲线取舍；长期曲线是垂直线，取舍消失。',series:[
+   {name:'短期（预期通胀 2%）',points:[[1.2,8.6],[2.6,6.4],[4.2,4.6],[6,3.1],[8,2.1]],dash:0},
+   {name:'长期（自然失业率）',points:[[5.6,0.6],[5.6,9.4]],dash:5}]},
+ {type:'timeline',label:'认知演变',events:[
+   {date:'1958',title:'Phillips 提出负相关关系',note:'基于英国近百年工资与失业数据。'},
+   {date:'1968',title:'Friedman / Phelps 引入预期',note:'指出长期不存在这种取舍。'},
+   {date:'1970s',title:'滞胀出现',note:'曲线右移，原版模型失效。',hot:1},
+   {date:'1980s 后',title:'附加预期的菲利普斯曲线成为主流',note:'短期有取舍，长期回到自然失业率。'}]},
+ {type:'pitfall',label:'常见误区',wrong:'可以用高通胀长期换取低失业。',right:'只可能短期换取，代价是通胀预期上移后取舍彻底消失。',why:'预期会适应。一旦工人和企业把高通胀计入定价，实际购买力被抵消。'}],
+links:[{to:'econ.macro.liquidity-trap',reason:'延伸：极端货币环境下的政策困境'}]},
+
+{id:'econ.micro.price-elasticity',domain:'econ',track:'micro',title:'需求价格弹性',one:'涨价之后，总收入到底是变多还是变少？',diff:2,tags:['弹性','定价'],recipe:['prose','curve','compare','scale'],blocks:[
+ {type:'prose',body:'需求价格弹性衡量**价格变动 1% 时需求量变动百分之几**。它决定了一件反直觉的事：**涨价不一定增加收入**。弹性小于 1 时涨价增收，弹性大于 1 时涨价减收。'},
+ {type:'curve',label:'拖动看斜率变化',xLabel:'数量 Q',yLabel:'价格 P',xDomain:[0,10],yDomain:[0,10],interactive:'elasticity',note:'拖动滑块改变弹性：曲线越平坦，需求越有弹性。',series:[{name:'需求曲线',points:[],dash:0}]},
+ {type:'compare',label:'两种极端',columns:['','缺乏弹性','富有弹性'],rows:[
+   ['典型商品','食盐、药品','奢侈品、替代品多的商品'],
+   ['弹性值','|E| < 1','|E| > 1'],
+   ['涨价后总收入','增加','减少'],
+   ['定价策略','提价保利润','降价换规模']]},
+ {type:'scale',label:'数量级锚定',ticks:[{v:'0',t:'完全无弹性'},{v:'1',t:'单位弹性\n收入不变'},{v:'∞',t:'完全弹性'}]}],
+links:[{to:'econ.micro.externality',reason:'对比：价格没有反映的那部分成本'}]},
+
+{id:'econ.micro.externality',domain:'econ',track:'micro',title:'外部性',one:'为什么我的行为成本，要由别人承担？',diff:2,tags:['市场失灵','福利'],recipe:['prose','compare','pitfall'],blocks:[
+ {type:'prose',body:'当一项活动的成本或收益**没有计入交易价格**时，就产生了外部性。负外部性让市场产出**多于**社会最优，正外部性让产出**少于**社会最优。这就是「市场失灵」的常见形态。'},
+ {type:'compare',label:'两类外部性',columns:['','负外部性','正外部性'],rows:[
+   ['例子','工厂排污、拥堵','疫苗接种、基础研究'],
+   ['私人最优 vs 社会最优','私人产出过多','私人产出过少'],
+   ['常见矫正手段','庇古税、排放权交易','补贴、专利保护'],
+   ['均衡点差异','社会边际成本 > 私人边际成本','社会边际收益 > 私人边际收益']]},
+ {type:'pitfall',label:'常见误区',wrong:'有外部性就应该直接禁止这项活动。',right:'目标是让外部成本进入定价，而不是消灭活动本身。',why:'排污的治本解是使私人成本等于社会成本，禁止通常代价过高。'}],
+links:[{to:'econ.micro.price-elasticity',reason:'前置：价格机制如何传递信号'}]},
+
+{id:'econ.econometrics.endogeneity',domain:'econ',track:'econometrics',title:'内生性',one:'回归系数显著，就说明因果关系成立吗？',diff:3,tags:['因果推断','回归'],recipe:['prose','formula','case','pitfall'],blocks:[
+ {type:'prose',body:'内生性指解释变量**与误差项相关**。一旦出现，OLS 估计量不再无偏，系数不能解释为因果效应。它是实证研究里最常见、也最容易被忽视的陷阱。'},
+ {type:'formula',label:'OLS 估计量与偏误',fx:'β̂ = β + Cov(X, ε) / Var(X)',symbols:[{s:'β̂',m:'OLS 估计出的系数'},{s:'β',m:'真实的因果效应'},{s:'Cov(X, ε)',m:'解释变量与误差项的相关性'},{s:'Var(X)',m:'解释变量的方差'}],note:'只要 Cov(X, ε) ≠ 0，估计量就偏离真值。'},
+ {type:'case',label:'典型场景',title:'教育年限对收入的影响',nums:[{label:'遗漏变量',v:'能力'},{label:'偏误方向',v:'高估'}],body:'能力强的人既受教育更多、收入也更高。「能力」进入误差项后与「教育年限」相关，系数因此被高估。'},
+ {type:'pitfall',label:'常见误区',wrong:'系数显著、R² 高，结论就可信。',right:'显著性只说明统计上不为零，不说明它估计的是因果效应。',why:'内生性带来的是系统性偏误，样本再大也不会消失。'}],
+links:[{to:'finance.quant.ic-icir',reason:'延伸：因子有效性检验中的同类问题'}]},
+
+{id:'finance.bond.duration',domain:'finance',track:'bond',title:'久期',one:'利率变动 1%，债券价格会变动多少？',diff:2,tags:['债券','利率风险'],recipe:['prose','formula','calc','scale'],blocks:[
+ {type:'prose',body:'久期是债券价格对利率的**敏感度的加权平均到期时间**。修正久期 7 年，意味着利率上升 1%，债券价格大约下跌 7%。它是衡量利率风险最常用的单一指标。'},
+ {type:'formula',label:'修正久期',fx:'D_mod = D_mac / (1 + y)',symbols:[{s:'D_mod',m:'修正久期（年）'},{s:'D_mac',m:'麦考利久期（年）'},{s:'y',m:'到期收益率'}],note:'价格变动近似：ΔP/P ≈ −D_mod × Δy'},
+ {type:'calc',label:'迷你计算器 · 拖动即算',calc:'duration',inputs:[{key:'c',label:'票息率',min:0,max:12,step:0.1,v:3,unit:'%'},{key:'n',label:'剩余期限',min:1,max:30,step:1,v:10,unit:'年'},{key:'y',label:'到期收益率',min:0.5,max:12,step:0.1,v:4,unit:'%'}]},
+ {type:'scale',label:'数量级锚定',ticks:[{v:'1 年',t:'短债\n利率风险很小'},{v:'7 年',t:'中久期\n利率 +1% → 价格 −7%'},{v:'25 年',t:'长债\n利率 +1% → 价格 −24%'}]}],
+links:[{to:'finance.bond.yield-curve',reason:'延伸：整条曲线的形状如何决定'}]},
+
+{id:'finance.bond.yield-curve',domain:'finance',track:'bond',title:'收益率曲线',one:'短端利率降了，长端为什么不动？',diff:2,tags:['债券','利率','曲线'],recipe:['prose','dataviz','compare','case'],blocks:[
+ {type:'prose',body:'收益率曲线把**不同期限**的国债收益率连成一条线。它的形状反映市场对未来的预期，也决定了银行、保险这类机构的盈利空间。'},
+ {type:'dataviz',label:'曲线形态',chart:'line',xLabel:'剩余期限',yLabel:'到期收益率 (%)',xTicks:['3M','1Y','3Y','5Y','10Y','30Y'],series:[{name:'常态（陡峭）',points:[1.8,2.0,2.3,2.6,3.0,3.3]},{name:'倒挂',points:[4.6,4.4,4.0,3.7,3.5,3.6]}],source:'示意数据，仅用于说明形态差异'},
+ {type:'compare',label:'三种形态',columns:['','陡峭','平坦 / 倒挂'],rows:[
+   ['市场含义','预期增长与通胀回升','预期增长走弱或即将降息'],
+   ['银行息差','扩大，利好放贷','收窄，压制放贷意愿'],
+   ['历史经验','复苏早期常见','衰退前常见信号，但非必然']]},
+ {type:'case',label:'真实观察',title:'倒挂不等于立刻衰退',nums:[{label:'历史领先时间',v:'6–18 个月'}],body:'倒挂作为信号有较长的领先期，且历史上出现过假信号。把它当作概率信息而非结论更稳妥。'}],
+links:[{to:'finance.bond.duration',reason:'前置：单只债券的利率敏感度'},{to:'hotspot.fed-cut-2026',reason:'关联：降息预期如何重塑曲线'}]},
+
+{id:'finance.equity.pe-ratio',domain:'finance',track:'equity',title:'市盈率',one:'20 倍市盈率，到底算贵还是便宜？',diff:1,tags:['估值','股票'],recipe:['prose','dataviz','compare','pitfall'],blocks:[
+ {type:'prose',body:'市盈率 = 股价 / 每股收益。它回答的是「**按当前盈利水平，多少年能赚回本金**」。但脱离盈利的**质量与增速**看这个数字，几乎一定误判。'},
+ {type:'dataviz',label:'历史分位',chart:'bar',xLabel:'估值区间',yLabel:'出现频率',xTicks:['<10x','10-15x','15-20x','20-25x','25-30x','>30x'],series:[{name:'历史分布',points:[6,14,23,18,11,7]}],source:'示意数据，仅用于说明分位思路'},
+ {type:'compare',label:'为什么不通用',columns:['','低市盈率','高市盈率'],rows:[
+   ['常见原因 A','盈利处于周期高点','市场预期高增长'],
+   ['常见原因 B','行业前景黯淡','盈利暂时被压低'],
+   ['判断要点','是否需要看盈利可持续性','是否能把增速兑现']]},
+ {type:'pitfall',label:'常见误区',wrong:'市盈率低于同行就等于便宜。',right:'要先确认盈利的可比性——口径、周期位置、一次性损益。',why:'低估值有时是市场对盈利不可持续的正确定价。'}],
+links:[{to:'finance.quant.ic-icir',reason:'延伸：如何用数据检验一个选股指标是否有效'}]},
+
+{id:'finance.quant.ic-icir',domain:'finance',track:'quant',title:'IC 与 ICIR',one:'一个因子有预测力，怎么用数字证明？',diff:3,tags:['量化','因子'],recipe:['prose','formula','dataviz','scale'],blocks:[
+ {type:'prose',body:'**IC** 是因子值与下期收益的横截面相关系数，衡量方向对不对；**ICIR** 是 IC 的均值除以其标准差，衡量这个方向**稳不稳**。方向对但不稳的因子，实盘会亏钱。'},
+ {type:'formula',label:'ICIR',fx:'ICIR = mean(IC) / std(IC) × √T',symbols:[{s:'mean(IC)',m:'各期 IC 的均值'},{s:'std(IC)',m:'各期 IC 的标准差'},{s:'T',m:'期数（年化用 √T）'}],note:'经验阈值：|IC| > 0.03 值得关注，IR > 0.5 较稳健。'},
+ {type:'dataviz',label:'IC 序列',chart:'bar',xLabel:'期数',yLabel:'IC',xTicks:['1','2','3','4','5','6','7','8'],series:[{name:'因子 A（ICIR 高）',points:[0.05,0.04,0.06,0.05,0.04,0.05,0.06,0.05]},{name:'因子 B（ICIR 低）',points:[0.14,0.11,0.03,0.01,0.09,0.05,0.12,0.04]}],source:'示意数据，仅用于说明 IC 稳定性差异'},
+ {type:'scale',label:'经验阈值',ticks:[{v:'0.01',t:'基本无预测力'},{v:'0.03',t:'值得进一步研究'},{v:'0.05',t:'较强，需警惕过拟合'}]}],
+links:[{to:'econ.econometrics.endogeneity',reason:'关联：同一类因果识别问题'}]},
+
+{id:'finance.fund.tracking-error',domain:'finance',track:'fund',title:'跟踪误差',one:'指数基金「跟得紧」怎么量化？',diff:2,tags:['基金','指数'],recipe:['prose','dataviz','compare','case','scale'],blocks:[
+ {type:'prose',body:'跟踪误差是基金收益率与标的指数收益率之差的**波动率**。注意：它衡量的是**偏离的稳定性**，不是偏离的平均大小——后者叫跟踪偏离度。'},
+ {type:'dataviz',label:'日度偏离分布',chart:'bar',xLabel:'日度偏离区间',yLabel:'天数',xTicks:['<-30bp','-30~-10','-10~0','0~10','10~30','>30bp'],series:[{name:'样本天数',points:[3,22,51,48,19,4]}],source:'示意数据，仅用于说明分布形态'},
+ {type:'compare',label:'两个易混指标',columns:['','跟踪偏离度','跟踪误差'],rows:[
+   ['定义','收益差的中枢','收益差的标准差'],
+   ['衡量什么','跟得准不准','跟得稳不稳'],
+   ['常见成因','费率、现金拖累','成分股调整、申赎冲击']]},
+ {type:'case',label:'实务判读',title:'两只同标的指数基金',nums:[{label:'基金 A 偏离',v:'-8bp'},{label:'基金 A 跟踪误差',v:'0.12%'}],body:'A 偏离稳定在 -8bp（主要是费率），跟踪误差很小；B 平均偏离 0，但波动大。长期持有看 A 更可预期。'},
+ {type:'scale',label:'数量级锚定',ticks:[{v:'0.05%',t:'优秀\n基本贴合指数'},{v:'0.20%',t:'一般\n多数指数基金水平'},{v:'0.50%+',t:'偏差明显\n需要看成因'}]}],
+links:[{to:'finance.quant.ic-icir',reason:'延伸：同类"均值 vs 稳定性"的判读思路'}]},
+
+{id:'hotspot.fed-cut-2026',domain:'hotspot',track:'event',title:'美联储 9 月降息与曲线重定价',one:'降息落地后，长端收益率为什么反而上行？',diff:2,tags:['美联储','利率'],recipe:['prose','timeline','dataviz','compare'],source:'美联储议息声明、美国财政部收益率数据（截至 2026-09-20）',stale:0,blocks:[
+ {type:'prose',body:'降息是**短端**的事，长端由增长与通胀预期决定。当市场把这次降息读成「**经济比预期更有韧性**」时，长端收益率反而可能走高——这就是所谓的「鹰派降息」反应。'},
+ {type:'timeline',label:'事件脉络',events:[
+   {date:'2026-08 中旬',title:'就业数据走弱，降息预期升温',note:'市场隐含降息概率升至 80% 以上。'},
+   {date:'2026-09-17',title:'议息会议降息 25bp',note:'点阵图显示年内可能再降一次。',hot:1},
+   {date:'2026-09-18',title:'长端收益率上行',note:'10 年期反而走高约 8bp。'},
+   {date:'2026-09-20',title:'曲线陡峭化',note:'2s10s 利差走阔至年内高位。'}]},
+ {type:'dataviz',label:'会议前后',chart:'line',xLabel:'期限',yLabel:'收益率 (%)',xTicks:['2Y','5Y','10Y','30Y'],series:[{name:'会议前',points:[3.6,3.7,3.85,4.05]},{name:'会议后',points:[3.35,3.65,3.93,4.25]}],source:'示意数据，仅用于说明陡峭化方向'},
+ {type:'compare',label:'两种解读',columns:['','鸽派解读','鹰派解读'],rows:[
+   ['关注点','降息本身','经济韧性 + 通胀粘性'],
+   ['对长端','收益率下行','收益率上行'],
+   ['对风险资产','普遍利好','分化：价值强于成长']]},
+ {type:'note',text:'本条内容截至 2026-09-20。事件会继续演化，但其中「短端由政策决定、长端由预期决定」这一机制不会因为事件结束而失效。'}],
+links:[{to:'finance.bond.yield-curve',reason:'基础概念：曲线形态由什么决定'},{to:'econ.macro.monetary-transmission',reason:'基础概念：降息如何传导到实体'}]},
+
+{id:'hotspot.pboc-lpr-2026',domain:'hotspot',track:'event',title:'LPR 非对称下调与银行息差',one:'为什么这次只降了 5 年期？',diff:2,tags:['LPR','银行'],recipe:['prose','timeline','case'],source:'全国银行间同业拆借中心 LPR 公告（截至 2026-09-15）',stale:0,blocks:[
+ {type:'prose',body:'1 年期 LPR 主要锚定企业短期贷款，5 年期以上 LPR 锚定房贷。**非对称下调**意味着政策在「稳地产」与「保银行息差」之间做取舍。'},
+ {type:'timeline',label:'政策脉络',events:[
+   {date:'2026-06',title:'1 年期 LPR 下调 10bp',note:'5 年期维持不变。'},
+   {date:'2026-09',title:'5 年期以上 LPR 单独下调 15bp',note:'指向房贷成本与地产需求。',hot:1},
+   {date:'2026-09 下旬',title:'商业银行净息差继续收窄',note:'负债端成本刚性是主要约束。'}]},
+ {type:'case',label:'关键约束',title:'为什么银行息差不配合？',nums:[{label:'净息差',v:'历史低位'},{label:'存款成本',v:'刚性强'}],body:'资产端利率持续下行，但存款利率调整滞后。息差被压到低位后，银行放贷意愿成为新的传导瓶颈。'}],
+links:[{to:'econ.macro.monetary-transmission',reason:'基础概念：传导链条上的漏损点'},{to:'finance.bond.yield-curve',reason:'关联：政策利率与长端定价'}]}
+];
+
+const KP={
+'econ.macro.monetary-transmission':['三道关：银行负债端 → 信贷定价 → 企业预期','漏损多发生在最后一关，取决于预期而非利率'],
+'econ.macro.liquidity-trap':['利率接近零时，货币需求曲线趋于垂直','投放再多流动性也压不动利率','钱没进信贷循环，就不会变成通胀'],
+'econ.macro.phillips-curve':['短期确实存在通胀与失业的取舍','长期曲线是垂直的，取舍消失','预期上移会把整条短期曲线推高'],
+'econ.micro.price-elasticity':['弹性小于 1 涨价增收，大于 1 涨价减收','弹性大小取决于替代品的多少','决策看总收入方向，不看单价高低'],
+'econ.micro.externality':['成本没进价格 = 负外部性，产出过多','正外部性则产出过少','矫正靠让外部成本进入定价，不是禁止'],
+'econ.econometrics.endogeneity':['内生性 = 解释变量与误差项相关','系数不再是无偏的因果效应','显著性和 R² 都救不了它'],
+'finance.bond.duration':['修正久期 7 年 ≈ 利率涨 1%，价格跌 7%','票息越低、期限越长，久期越大','用久期是线性近似，凸性会略微修正'],
+'finance.bond.yield-curve':['短端由政策决定，长端由增长与通胀预期决定','陡峭 = 预期回暖；倒挂 = 预期走弱','倒挂领先衰退 6–18 个月，但不是必然'],
+'finance.equity.pe-ratio':['市盈率 = 股价 / 每股收益，回答几年回本','必须先确认盈利口径与周期位置','低估值常是对盈利不可持续的正确定价'],
+'finance.quant.ic-icir':['IC 看方向对不对，ICIR 看稳不稳','ICIR = mean(IC) / std(IC) × √T','经验阈值：|IC| > 0.03，IR > 0.5'],
+'finance.fund.tracking-error':['跟踪误差是收益差的标准差，衡量稳不稳','跟踪偏离度是收益差的均值，衡量准不准','长期持有体验看跟踪误差更准'],
+'hotspot.fed-cut-2026':['降息是短端的事，长端由预期决定','被读成「鹰派降息」时，长端反而上行','曲线陡峭化利好价值、压制成长'],
+'hotspot.pboc-lpr-2026':['1 年期 LPR 锚企业贷款，5 年期以上锚房贷','非对称下调是稳地产与保息差的取舍','息差压到低位后，放贷意愿成为新瓶颈']
+};
+C.forEach(c=>c.kp=KP[c.id]||[]);
+
+const STATE_LABEL={unread:'未读',reading:'在读',review:'待复习',known:'已掌握',fuzzy:'不懂'};
+const DOT={unread:'○',reading:'◐',review:'◉',known:'●',fuzzy:'◆'};
+
+var S={
+ route:{name:'home'},
+ theme:'light',
+ progress:{},
+ fav:{},
+ open:{},
+ rq:{queue:[],idx:0,revealed:false,done:0},
+ search:'',
+ upd:'idle'
+};
+C.forEach((c,i)=>{S.progress[c.id]='unread'});
+['econ.macro.monetary-transmission','finance.bond.duration','finance.equity.pe-ratio','econ.micro.price-elasticity'].forEach(id=>S.progress[id]='review');
+['econ.macro.liquidity-trap','econ.econometrics.endogeneity','finance.bond.yield-curve'].forEach(id=>S.progress[id]='reading');
+['econ.micro.externality'].forEach(id=>S.progress[id]='known');
+S.fav['finance.bond.duration']=1;
+TRACKS.forEach(t=>{
+ const items=C.filter(c=>c.domain===t.domain&&c.track===t.key);
+ S.open[t.domain+'.'+t.key]=items.some(c=>S.progress[c.id]==='review');
+});
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,' ');
+const byId=id=>C.find(c=>c.id===id);
+const inDomain=d=>C.filter(c=>c.domain===d);
+const inTrack=(d,t)=>C.filter(c=>c.domain===d&&c.track===t);
+const trackLabel=k=>(TRACKS.find(t=>t.key===k)||{}).label||k;
+const recipeName={prose:'定义',formula:'公式',curve:'曲线',dataviz:'数据图',compare:'对比表',flow:'传导图',timeline:'时间线',pitfall:'误区',case:'微案例',scale:'数量级',calc:'计算器',note:'批注'};
+const pct=d=>{const a=inDomain(d);return a.length?Math.round(a.filter(c=>S.progress[c.id]==='known').length/a.length*100):0};
+
+function go(r,noScroll){S.route=r;if(!noScroll)$('#view').scrollTop=0;render()}
+
+function renderNav(){
+ const items=[
+  {k:'home',l:'首页',r:{name:'home'}},
+  {k:'sep1'},
+  ...['econ','finance','hotspot'].map(d=>({k:d,l:DOMAINS[d],c:inDomain(d).length,r:{name:'domain',domain:d}})),
+  {k:'sep2'},
+  {k:'review',l:'复习',c:dueList().length||'',r:{name:'review'}},
+  {k:'search',l:'搜索',r:{name:'search'}},
+  {k:'settings',l:'设置',r:{name:'settings'}}
+ ];
+ const cur=S.route;
+ $('#nav').innerHTML=items.map(it=>{
+  if(it.k.startsWith('sep'))return '<div class="nav-sep"></div>';
+  let on=false;
+  if(cur.name===it.r.name){ if(it.r.domain)on=false; else on=true; }
+  if(cur.name==='domain'&&it.r.domain===cur.domain)on=true;
+  return '<div class="nav-item'+(on?' on':'')+'" onclick=\'go('+JSON.stringify(it.r).replace(/"/g,'&quot;')+')\'>'+
+   '<span>'+it.l+'</span>'+(it.c!==''&&it.c!==undefined?'<span class="cnt">'+it.c+'</span>':'')+'</div>';
+ }).join('');
+ const total=C.length,known=C.filter(c=>S.progress[c.id]==='known').length;
+ const p=Math.round(known/total*100),R=15.5,circ=2*Math.PI*R;
+ $('#ring').innerHTML='<circle cx="18" cy="18" r="'+R+'" fill="none" stroke="var(--surface-3)" stroke-width="4"/>'+
+  '<circle cx="18" cy="18" r="'+R+'" fill="none" stroke="var(--brand)" stroke-width="4" stroke-linecap="round" '+
+  'stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-p/100))+'" transform="rotate(-90 18 18)"/>';
+ $('#ringTxt').innerHTML='已掌握 '+known+' / '+total+'<br>'+p+'%';
+}
+function dueList(){return C.filter(c=>S.progress[c.id]==='review')}
+function crumbs(){
+ const r=S.route;
+ if(r.name==='home')return '<b>首页</b>';
+ if(r.name==='domain')return '<b>'+DOMAINS[r.domain]+'</b>';
+ if(r.name==='concept'){const c=byId(r.id);return c?'<b>'+DOMAINS[c.domain]+'</b> / '+trackLabel(c.track):'<b>概念</b>'}
+ return '<b>'+({review:'复习',search:'搜索',settings:'设置'}[r.name]||'')+'</b>';
+}
+
+/* ---------- block renderers ---------- */
+function plot(series,xDomain,yDomain,xLabel,yLabel,opt){
+ opt=opt||{};
+ const W=640,H=250,L=52,R=16,T=16,B=40;
+ const px=v=>L+(v-xDomain[0])/(xDomain[1]-xDomain[0])*(W-L-R);
+ const py=v=>H-B-(v-yDomain[0])/(yDomain[1]-yDomain[0])*(H-T-B);
+ let g='';
+ for(let i=0;i<=4;i++){const yv=yDomain[0]+(yDomain[1]-yDomain[0])*i/4;const y=py(yv);
+  g+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="var(--border)" stroke-width="0.5"/>'+
+     '<text x="'+(L-9)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="var(--text-3)">'+yv.toFixed(yv<10?1:0)+'</text>'}
+ for(let i=0;i<=4;i++){const xv=xDomain[0]+(xDomain[1]-xDomain[0])*i/4;const x=px(xv);
+  g+='<text x="'+x+'" y="'+(H-B+17)+'" text-anchor="middle" font-size="10.5" fill="var(--text-3)">'+xv.toFixed(0)+'</text>'}
+ g+='<line x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'" stroke="var(--border-2)" stroke-width="0.8"/>'+
+    '<line x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+(H-B)+'" stroke="var(--border-2)" stroke-width="0.8"/>';
+ series.forEach(s=>{
+  const d=s.points.map((p,i)=>(i?'L':'M')+px(p[0]).toFixed(1)+' '+py(p[1]).toFixed(1)).join(' ');
+  g+='<path d="'+d+'" fill="none" stroke="'+(s.color||'var(--brand)')+'" stroke-width="2"'+
+     (s.dash?' stroke-dasharray="'+s.dash+' 4"':'')+' stroke-linecap="round"/>';
+  if(opt.dots)s.points.forEach(p=>{g+='<circle cx="'+px(p[0])+'" cy="'+py(p[1])+'" r="2.6" fill="'+(s.color||'var(--brand)')+'"/>'});
+ });
+ if(opt.legend!==false){
+  let lx=L;
+  series.forEach(s=>{g+='<line x1="'+lx+'" y1="'+(T+2)+'" x2="'+(lx+16)+'" y2="'+(T+2)+'" stroke="'+(s.color||'var(--brand)')+'" stroke-width="2"'+(s.dash?' stroke-dasharray="'+s.dash+' 4"':'')+'/>'+
+   '<text x="'+(lx+21)+'" y="'+(T+6)+'" font-size="10.5" fill="var(--text-3)">'+esc(s.name)+'</text>';lx+=Math.min(150,26+s.name.length*11)});
+ }
+ g+='<text x="'+(W-R)+'" y="'+(H-4)+'" text-anchor="end" font-size="10.5" fill="var(--text-3)">'+esc(xLabel)+'</text>';
+ g+='<text x="8" y="'+(T-5)+'" font-size="10.5" fill="var(--text-3)">'+esc(yLabel)+'</text>';
+ return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
+}
+function barchart(b){
+ const W=640,H=230,L=44,R=14,T=18,B=38;
+ const max=Math.max(...b.series.flatMap(s=>s.points))*1.18;
+ const n=b.series[0].points.length, gw=(W-L-R)/n, bw=Math.min(30,gw/(b.series.length+1.2));
+ const py=v=>H-B-v/max*(H-T-B);
+ const pal=['var(--brand)','var(--due)','var(--ok)','var(--bad)'];
+ let g='';
+ for(let i=0;i<=3;i++){const y=py(max*i/3);g+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="var(--border)" stroke-width="0.5"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="var(--text-3)">'+(max*i/3).toFixed(max<2?2:0)+'</text>'}
+ b.series.forEach((s,si)=>s.points.forEach((v,i)=>{
+  const x=L+gw*i+(gw-bw*(b.series.length))/2+bw*si, y=py(v);
+  g+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(H-B-y).toFixed(1)+'" rx="2.5" fill="'+pal[si%4]+'"/>';
+ }));
+ (b.xTicks||[]).forEach((t,i)=>{g+='<text x="'+(L+gw*(i+.5)).toFixed(1)+'" y="'+(H-B+16)+'" text-anchor="middle" font-size="10.5" fill="var(--text-3)">'+esc(t)+'</text>'});
+ g+='<line x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'" stroke="var(--border-2)" stroke-width="0.8"/>';
+ if(b.series.length>1){let lx=L;b.series.forEach((s,si)=>{g+='<rect x="'+lx+'" y="'+(T-10)+'" width="9" height="9" rx="2" fill="'+pal[si%4]+'"/><text x="'+(lx+14)+'" y="'+(T-2)+'" font-size="10.5" fill="var(--text-3)">'+esc(s.name)+'</text>';lx+=Math.min(190,26+s.name.length*12)})}
+ g+='<text x="'+(W-R)+'" y="'+(H-4)+'" text-anchor="end" font-size="10.5" fill="var(--text-3)">'+esc(b.xLabel||'')+'</text>';
+ return '<svg viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';
+}
+function elasticitySeries(e){
+ const A=10-e*0.8;
+ const pts=[];for(let q=0.4;q<=9.6;q+=0.4){pts.push([q,Math.max(0.2,Math.min(9.8,9.6-q*A/6))])}
+ return [{name:'需求曲线',points:pts,dash:0}];
+}
+function renderBlock(b,ci){
+ const lab=b.label?'<div class="blk-label">'+esc(b.label)+'</div>':'';
+ switch(b.type){
+ case 'prose':return '<div class="blk"><div class="prose">'+md(b.body)+'</div></div>';
+ case 'note':return '<div class="blk"><div class="pf-why" style="font-size:13px">'+md(b.text)+'</div></div>';
+ case 'formula':return '<div class="blk">'+lab+'<div class="formula-box"><div class="fx">'+esc(b.fx)+'</div>'+
+  (b.note?'<div class="fn">'+esc(b.note)+'</div>':'')+'</div><div class="symtab">'+
+  b.symbols.map(s=>'<div><b>'+esc(s.s)+'</b>'+esc(s.m)+'</div>').join('')+'</div></div>';
+ case 'curve':{
+  const id='cv'+ci;
+  const ser=b.interactive?elasticitySeries(e_val):b.series;
+  let h='<div class="blk">'+lab+'<div class="chart-wrap">'+plot(ser,b.xDomain,b.yDomain,b.xLabel,b.yLabel,{dots:!!b.interactive})+'</div>';
+  if(b.note)h+='<div class="blk-label" style="margin-top:9px;margin-bottom:0">'+esc(b.note)+'</div>';
+  if(b.interactive)h+='<div class="ctrl"><label>需求弹性</label><input type="range" min="0" max="10" step="1" value="'+e_val+'" oninput="e_val=+this.value;document.getElementById(\'eout\').textContent=(e_val>=7?\'富有弹性\':e_val<=3?\'缺乏弹性\':\'接近单位弹性\');refreshBlocks()"><span class="cv" id="eout">'+(e_val>=7?'富有弹性':e_val<=3?'缺乏弹性':'接近单位弹性')+'</span></div>';
+  return h+'</div>';}
+ case 'dataviz':return '<div class="blk">'+lab+'<div class="chart-wrap">'+barchart(b)+'</div>'+
+  (b.source?'<div class="chart-src">来源：'+esc(b.source)+'</div>':'')+'</div>';
+ case 'compare':return '<div class="blk">'+lab+'<table class="cmp"><thead><tr>'+
+  b.columns.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+
+  b.rows.map(r=>'<tr>'+r.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+ case 'flow':return '<div class="blk">'+lab+'<div class="flow-row">'+b.steps.map((s,i)=>
+  '<div class="flow-step"><b>'+esc(s.label)+'</b><span>'+esc(s.note||'')+'</span></div>'+
+  (i<b.steps.length-1?'<div class="flow-arrow">→</div>':'')).join('')+'</div></div>';
+ case 'timeline':return '<div class="blk">'+lab+'<div class="tl">'+b.events.map(e=>
+  '<div class="tl-item'+(e.hot?' hot':'')+'"><div class="tl-dot"></div><div class="tl-body">'+
+  '<div class="tl-date">'+esc(e.date)+'</div><b>'+esc(e.title)+'</b><span>'+esc(e.note)+'</span></div></div>').join('')+'</div></div>';
+ case 'pitfall':return '<div class="blk">'+lab+'<div class="pitfall">'+
+  '<div class="pf pf-wrong"><div class="pf-h">常见误区</div>'+esc(b.wrong)+'</div>'+
+  '<div class="pf pf-right"><div class="pf-h">实际上</div>'+esc(b.right)+'</div></div>'+
+  '<div class="pf-why">'+esc(b.why)+'</div></div>';
+ case 'case':return '<div class="blk">'+lab+'<div class="case-card"><div class="ct">'+esc(b.title)+'</div>'+
+  (b.nums?'<div class="case-nums">'+b.nums.map(n=>'<div>'+esc(n.label)+'<b>'+esc(n.v)+'</b></div>').join('')+'</div>':'')+
+  '<p>'+esc(b.body)+'</p></div></div>';
+ case 'scale':return '<div class="blk">'+lab+'<div class="scale-row">'+b.ticks.map(t=>
+  '<div class="scale-tick"><b>'+esc(t.v)+'</b><span>'+esc(t.t).replace(/\n/g,'<br>')+'</span></div>').join('')+'</div></div>';
+ case 'calc':return '<div class="blk">'+lab+calcHTML(b)+'</div>';
+ }
+ return '';
+}
+var e_val=4;
+function calcHTML(b){
+ const ins=b.inputs;
+ return '<div class="calc-form"><div class="calc-grid">'+ins.map(i=>
+  '<div class="cf"><label>'+esc(i.label)+'<b id="lb_'+i.key+'">'+i.v+i.unit+'</b></label>'+
+  '<input type="range" min="'+i.min+'" max="'+i.max+'" step="'+i.step+'" value="'+i.v+'" '+
+  'oninput="calc_'+b.calc+'(this,\''+i.key+'\')"></div>').join('')+'</div>'+
+  '<div class="calc-out" id="calcout"></div></div>';
+}
+function calc_duration(el,key){
+ const g=id=>parseFloat(document.getElementById('lb_'+id).textContent);
+ document.getElementById('lb_'+key).textContent=el.value+({c:'%',n:'年',y:'%'}[key]);
+ const vals={c:g('c'),n:g('n'),y:g('y')};
+ const r=vals.y/100,cp=vals.c/100;
+ let price=0,dur=0;
+ for(let t=1;t<=Math.round(vals.n);t++){const cf=100*cp+(t===Math.round(vals.n)?100:0);const pv=cf/Math.pow(1+r,t);price+=pv;dur+=t*pv}
+ const mac=dur/price,mod=mac/(1+r);
+ document.getElementById('calcout').innerHTML=
+  '<div>债券价格<b>'+price.toFixed(2)+'</b></div>'+
+  '<div>麦考利久期<b>'+mac.toFixed(2)+' 年</b></div>'+
+  '<div>修正久期<b>'+mod.toFixed(2)+' 年</b></div>'+
+  '<div style="grid-column:1/-1;color:var(--text-2)">利率上升 1% → 价格约变动 <b style="display:inline;font-size:13px;color:var(--up)">'+
+  (-mod).toFixed(2)+'%</b>（实际因凸性会略小）</div>';
+}
+function refreshBlocks(){
+ const v=$('#view');if(!v||S.route.name!=='concept')return;
+ const c=byId(S.route.id);if(!c)return;
+ const keep=v.scrollTop;
+ v.querySelectorAll('.blk').forEach((n,i)=>{n.outerHTML=renderBlock(c.blocks[i],i)});
+ v.scrollTop=keep;
+}
+function conceptBody(c){
+ return c.blocks.map((b,i)=>renderBlock(b,i)).join('');
+}
+
+/* ---------- pages ---------- */
+function pageHome(){
+ const d=dueList();
+ return '<div class="page"><div class="page-title">9 月 21 日 周一</div>'+
+ '<div class="page-sub">共 '+C.length+' 个概念 · 已掌握 '+C.filter(c=>S.progress[c.id]==='known').length+' 个</div>'+
+ '<div style="margin-top:22px"><div class="hero" onclick="startReview()">'+
+  (d.length?'<div><div class="hl">今天要复习</div><div class="hv"><em>'+d.length+'</em> 个概念到期</div></div>'
+          :'<div><div class="hl">今天没有到期的复习</div><div class="hv">随便看一个 <em>→</em></div></div>')+
+  '<div class="go">→</div></div></div>'+
+ '<div class="grid3">'+['econ','finance','hotspot'].map(k=>{
+   const a=inDomain(k),kn=a.filter(c=>S.progress[c.id]==='known').length;
+   return '<div class="dcard" onclick=\'go({name:"domain",domain:"'+k+'"})\'><div class="dt">'+DOMAINS[k]+'</div>'+
+   '<div class="dn">'+a.length+' 个概念 · 已掌握 '+kn+'</div><div class="bar"><i style="width:'+pct(k)+'%"></i></div>'+
+   '<div class="dp">'+pct(k)+'%</div></div>'}).join('')+'</div>'+
+ '<div class="sec-h">最近读过</div>'+
+ '<div class="card"><div class="rows">'+C.filter(c=>S.progress[c.id]!=='unread').slice(0,5).map(c=>rowHTML(c)).join('')+'</div></div>'+
+ '</div>';
+}
+function rowHTML(c){
+ const st=S.progress[c.id];
+ return '<div class="row" onclick=\'go({name:"concept",id:"'+c.id+'"})\'>'+
+ '<div class="dot '+st+'">'+DOT[st]+'</div>'+
+ '<div class="rt"><b>'+esc(c.title)+'</b><span>'+esc(c.one)+'</span></div>'+
+ '<div class="rdf">'+trackLabel(c.track)+' · 难度 '+c.diff+'</div></div>';
+}
+function srcDate(c){
+ const m=c.source&&c.source.match(/截至\s*([\d-]+)/);
+ return m?m[1]:'2026-09-20';
+}
+function kcardHTML(c){
+ const st=S.progress[c.id];
+ let h='<div class="kcard" onclick=\'go({name:"concept",id:"'+c.id+'"})\'>'+
+  '<div class="kc-head"><span class="dot '+st+'">'+DOT[st]+'</span>'+
+  '<span class="kc-title">'+esc(c.title)+'</span>'+
+  '<span class="kc-diff">难度 '+c.diff+'</span>'+
+  '<span class="kc-detail">详情 →</span></div>'+
+  '<div class="kc-one">'+esc(c.one)+'</div>'+
+  '<ul class="kc-pts">'+c.kp.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>'+
+  '<div class="kc-recipe">'+c.recipe.map(r=>'<span class="rb">'+recipeName[r]+'</span>').join('')+'</div>';
+ if(c.domain==='hotspot')h+='<div class="kc-stale">内容截至 '+esc(srcDate(c))+'</div>';
+ return h+'</div>';
+}
+function pageDomain(d,track){
+ let list=track?inTrack(d,track):inDomain(d);
+ const all=inDomain(d);
+ let h='<div class="page"><div class="page-title">'+DOMAINS[d]+(track?' · '+trackLabel(track):'')+'</div>'+
+ '<div class="page-sub">'+all.length+' 个概念的要点速览 · 已掌握 '+all.filter(c=>S.progress[c.id]==='known').length+
+ ' · 待复习 '+all.filter(c=>S.progress[c.id]==='review').length+'</div>';
+ const groups=track?[{key:track}]:TRACKS.filter(t=>t.domain===d);
+ let anyShown=false;
+ groups.forEach(g=>{
+  const items=list.filter(c=>c.track===g.key);
+  if(!items.length)return; anyShown=true;
+  const dueN=items.filter(c=>S.progress[c.id]==='review').length;
+  h+='<div class="acc'+(S.open[d+'.'+g.key]?' open':'')+'"><div class="acc-head" onclick="toggleAcc(\''+d+'.'+g.key+'\')">'+
+   '<div><b>'+trackLabel(g.key)+'</b><span class="n">'+items.length+' 个概念'+(dueN?' · '+dueN+' 个待复习':'')+'</span></div>'+
+   '<div class="ar">▶</div></div><div class="acc-body"><div class="kcards">'+
+   items.map(kcardHTML).join('')+'</div></div></div>';
+ });
+ if(!anyShown)h+='<div class="empty"><b>这个分区还没有内容</b>去设置页检查内容更新，或导入内容包<div style="margin-top:14px"><span class="btn sm" onclick="go({name:\'settings\'})">去设置页</span></div></div>';
+ return h+'</div>';
+}
+function pageConcept(id){
+ const c=byId(id);
+ if(!c)return '<div class="page"><div class="empty"><b>这个概念已不在内容库中</b>'+
+  '它可能已在最近一次内容更新中被移除<div style="margin-top:14px"><span class="btn sm" onclick="go({name:\'home\'})">返回首页</span></div></div></div>';
+ const st=S.progress[c.id];
+ let h='<div class="page"><div style="margin-bottom:14px">'+
+  '<span class="backlink" onclick=\'go({name:"domain",domain:"'+c.domain+'"})\'>← 返回'+DOMAINS[c.domain]+'要点速览</span></div>'+
+  '<div class="c-head"><div class="crumb" style="padding-top:2px">'+
+  '<span style="cursor:pointer;color:var(--brand)" onclick=\'go({name:"domain",domain:"'+c.domain+'"})\'>'+DOMAINS[c.domain]+'</span>'+
+  ' / '+trackLabel(c.track)+'</div><div class="c-meta">'+
+  '<span class="dot '+st+'" style="flex:none">'+DOT[st]+'</span><span>'+STATE_LABEL[st]+'</span>'+
+  '<span class="fav" onclick="toggleFav(\''+c.id+'\')">'+(S.fav[c.id]?'★':'☆')+'</span></div></div>'+
+  '<div class="c-title">'+esc(c.title)+'</div><div class="c-oneliner">'+esc(c.one)+'</div>';
+ if(c.domain==='hotspot')h+='<div class="stale">内容截至 '+esc(srcDate(c))+'</div>';
+ h+='<div class="recipe"><span class="rl">本页讲解方式</span>'+
+  c.recipe.map(r=>'<span class="rb">'+recipeName[r]+'</span>').join('')+'</div>';
+ h+=conceptBody(c);
+ h+='<div class="links"><div class="lh">相关概念</div>'+
+  c.links.map(l=>{const t=byId(l.to);return '<div class="lk" onclick=\'go({name:"concept",id:"'+l.to+'"})\'><span class="la">→</span><b>'+(t?esc(t.title):l.to)+'</b><span>'+esc(l.reason)+'</span></div>'}).join('')+'</div>';
+ const nxt=inDomain(c.domain)[(inDomain(c.domain).findIndex(x=>x.id===c.id)+1)%inDomain(c.domain).length];
+ h+='<div class="action-bar"><span class="btn" onclick="setState(\''+c.id+'\',\'fuzzy\')">标记不懂</span>'+
+  '<span class="btn" onclick="setState(\''+c.id+'\',\'review\')">加入待复习</span>'+
+  '<span class="btn primary" onclick="setState(\''+c.id+'\',\'known\')">我掌握了</span></div>'+
+  '<div style="margin-top:14px;text-align:center"><span class="btn sm" onclick=\'go({name:"concept",id:"'+nxt.id+'"})\'>下一个：'+esc(nxt.title)+' →</span></div>';
+ return h+'</div>';
+}
+function pageReview(){
+ if(!S.rq.queue.length)return '<div class="page"><div class="empty"><b>复习队列是空的</b>'+
+  '去各分区把概念标记为「加入待复习」，它们会出现在这里<div style="margin-top:16px">'+
+  '<span class="btn sm" onclick="go({name:\'home\'})">返回首页</span></div></div></div>';
+ if(S.rq.idx>=S.rq.queue.length){
+  return '<div class="page"><div class="rq-card"><div class="rq-t">今天复习完了</div>'+
+  '<div class="rq-o">本轮完成 '+S.rq.done+' 个概念<br>明天预计有 '+(dueList().length)+' 个到期</div>'+
+  '<div style="margin-top:28px"><span class="btn sm" onclick="endReview()">返回首页</span></div></div></div>';
+ }
+ const c=byId(S.rq.queue[S.rq.idx]);
+ const total=S.rq.queue.length,p=(S.rq.idx)/total*100;
+ let h='<div class="page"><div class="rq-prog"><i style="width:'+p+'%"></i></div>'+
+  '<div class="rq-num">'+(S.rq.idx+1)+' / '+total+'</div>';
+ if(!S.rq.revealed){
+  h+='<div class="rq-card"><div class="rq-t">'+esc(c.title)+'</div>'+
+   '<div class="rq-o">'+esc(c.one)+'</div></div>'+
+   '<div class="rq-hint">想一下再看解析</div>'+
+   '<div style="text-align:center"><span class="btn sm" onclick="reveal()">展开解析（空格）</span></div>';
+ }else{
+  h+='<div class="rq-full"><div style="font-size:17px;font-weight:500">'+esc(c.title)+'</div>'+
+   '<div class="c-oneliner" style="margin-bottom:4px">'+esc(c.one)+'</div>'+
+   '<div class="recipe" style="margin-top:10px;padding-top:10px">'+c.recipe.map(r=>'<span class="rb">'+recipeName[r]+'</span>').join('')+'</div>'+
+   conceptBody(c)+'</div>'+
+   '<div class="rq-rate">'+
+   '<div class="rq-btn b0" onclick="rate(0)">忘了<span style="display:block;font-size:11px;opacity:.7">1</span></div>'+
+   '<div class="rq-btn b1" onclick="rate(1)">模糊<span style="display:block;font-size:11px;opacity:.7">2</span></div>'+
+   '<div class="rq-btn b2" onclick="rate(2)">记得<span style="display:block;font-size:11px;opacity:.7">3</span></div></div>';
+ }
+ return h+'</div>';
+}
+function pageSearch(){
+ const q=S.search.trim();
+ let h='<div class="page"><div class="page-title">搜索</div>'+
+ '<div style="margin-top:16px"><input class="search-input" placeholder="输入概念、标签或关键词…" value="'+esc(S.search)+'" '+
+ 'oninput="S.search=this.value;renderSearch()" id="sinput"></div>';
+ if(!q){h+='<div class="sec-h">最近搜索</div><div class="filters">'+
+  ['久期','弹性','通胀'].map(t=>'<div class="chip" onclick="S.search=\''+t+'\';renderSearch()">'+t+'</div>').join('')+'</div>';
+  return h+'</div>'}
+ const hits=C.filter(c=>(c.title+c.one+c.tags.join('')+JSON.stringify(c.blocks)).toLowerCase().includes(q.toLowerCase()));
+ if(!hits.length)return h+'<div class="empty"><b>没有找到「'+esc(q)+'」</b>换个关键词，或去设置页检查内容更新</div></div>';
+ let cur='';
+ h+='<div style="margin-top:6px">';
+ hits.forEach(c=>{
+  const g=DOMAINS[c.domain]+' · '+trackLabel(c.track);
+  if(g!==cur){cur=g;h+='<div class="srch-grp">'+g+'</div><div class="card"><div class="rows">'}
+  const hl=s=>esc(s).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>');
+  h+='<div class="row" onclick=\'go({name:"concept",id:"'+c.id+'"})\'><div class="dot '+S.progress[c.id]+'">'+DOT[S.progress[c.id]]+'</div>'+
+   '<div class="rt"><b>'+hl(c.title)+'</b><span>'+hl(c.one)+'</span></div></div>';
+  const nx=hits[hits.indexOf(c)+1];
+  if(!nx||DOMAINS[nx.domain]+' · '+trackLabel(nx.track)!==g)h+='</div></div>';
+ });
+ return h+'</div></div>';
+}
+function pageSettings(){
+ let h='<div class="page"><div class="page-title">设置</div>';
+ h+='<div class="set-sec">内容</div><div class="set-box">'+
+  '<div class="set-row"><div><div class="sl">当前版本</div><div class="sd">v2026.09.21 · 经济学 6 · 金融学 5 · 热点 2</div></div></div>'+
+  '<div class="set-row"><div><div class="sl">上次检查</div><div class="sd">今天 13:52</div></div><div class="sr">启动时自动检查已开启</div></div>'+
+  '<div class="set-row"><div><div class="sl">检查更新</div><div class="sd">'+
+   (S.upd==='idle'?'有新内容时会在这里提示':S.upd==='checking'?'正在检查…':S.upd==='found'?'发现新版本 v2026.09.28':'已是最新版本')+'</div></div>'+
+   '<div class="sr">'+(S.upd==='checking'?'<span style="color:var(--text-3)">检查中…</span>':
+    S.upd==='found'?'<span class="btn sm primary" onclick="S.upd=\'done\';render()">立即更新</span>':
+    S.upd==='done'?'<span style="color:var(--ok)">已更新到 v2026.09.28</span>':
+    '<span class="btn sm" onclick="S.upd=\'checking\';render();setTimeout(()=>{S.upd=\'found\';render()},1100)">立即检查</span>')+'</div></div>'+
+  '<div class="set-row"><div><div class="sl">导入内容</div><div class="sd">选择本地的 concepts.jsonl，校验通过后替换内容库</div></div><div class="sr"><span class="btn sm">选择文件…</span></div></div>'+
+  '</div>';
+ if(S.upd==='found')h+='<div class="upd-panel"><div class="uh">v2026.09.28 可用</div>'+
+  '<div class="upd-line"><span>发布日期</span><span>2026-09-28</span></div>'+
+  '<div class="upd-line"><span>经济学</span><span>新增 2 · 修改 1</span></div>'+
+  '<div class="upd-line"><span>金融学</span><span>新增 0 · 修改 3</span></div>'+
+  '<div class="upd-line"><span>世界热点</span><span>新增 4 · 修改 2</span></div>'+
+  '<div style="margin-top:12px;display:flex;gap:8px"><span class="btn sm primary" onclick="S.upd=\'done\';render()">立即更新</span>'+
+  '<span class="btn sm" onclick="S.upd=\'idle\';render()">稍后</span></div>'+
+  '<div style="margin-top:10px;font-size:11.5px;color:var(--text-3)">更新只替换内容库，你的复习进度不受影响。</div></div>';
+ if(S.upd==='done')h+='<div class="upd-panel"><div class="uh" style="color:var(--ok)">已更新到 v2026.09.28</div>'+
+  '<div style="font-size:12.5px;color:var(--text-2)">内容库已替换，复习进度已保留。热点区新增 4 条事件。</div></div>';
+ h+='<div class="set-sec">数据</div><div class="set-box">'+
+  '<div class="set-row"><div><div class="sl">导出我的数据</div><div class="sd">进度、收藏、笔记 · 不含内容库</div></div><div class="sr"><span class="btn sm">导出</span></div></div>'+
+  '<div class="set-row"><div><div class="sl">导入我的数据</div><div class="sd">从备份文件恢复</div></div><div class="sr"><span class="btn sm">导入</span></div></div>'+
+  '<div class="set-row"><div><div class="sl">重置复习进度</div><div class="sd">清空全部进度与复习记录，不可撤销</div></div><div class="sr"><span class="btn sm" style="color:var(--bad);border-color:var(--bad)" onclick="resetAll()">重置</span></div></div>'+
+  '</div>';
+ h+='<div class="set-sec">外观</div><div class="set-box"><div class="set-row"><div><div class="sl">主题</div></div>'+
+  '<div class="sr"><div class="seg">'+['light','dark'].map(t=>'<div class="'+(S.theme===t?'on':'')+'" onclick="setTheme(\''+t+'\')">'+(t==='light'?'浅色':'深色')+'</div>').join('')+'</div></div></div></div>';
+ h+='<div class="set-sec">关于</div><div class="set-box"><div class="set-row"><div><div class="sl">Recall v1.0</div>'+
+  '<div class="sd">纯本地运行 · 内容可离线使用 · 这是一个交互原型，数据为演示用</div></div></div></div>';
+ return h+'</div>';
+}
+
+/* ---------- actions ---------- */
+function toggleAcc(k){S.open[k]=!S.open[k];render()}
+function setState(id,st){S.progress[id]=st;render()}
+function toggleFav(id){S.fav[id]=S.fav[id]?0:1;render()}
+function setTheme(t){S.theme=t;document.documentElement.dataset.theme=t;render()}
+function resetAll(){if(confirm('确定要清空全部复习进度吗？此操作不可撤销。')){C.forEach(c=>S.progress[c.id]='unread');render()}}
+function startReview(){S.rq={queue:dueList().map(c=>c.id),idx:0,revealed:false,done:0};go({name:'review'})}
+function reveal(){S.rq.revealed=true;render()}
+function rate(n){S.progress[S.rq.queue[S.rq.idx]]=n===0?'review':n===1?'reading':'known';
+ S.rq.done++;S.rq.idx++;S.rq.revealed=false;render()}
+function endReview(){S.rq={queue:[],idx:0,revealed:false,done:0};go({name:'home'})}
+function renderSearch(){const v=$('#view');v.innerHTML=pageSearch();const i=$('#sinput');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}}
+
+function render(){
+ renderNav();
+ $('#crumb').innerHTML=crumbs();
+ const b=$('#badge');
+ b.className='badge'+(S.upd==='found'?' new':'');
+ b.innerHTML=S.upd==='found'?'<i></i>内容有更新':'内容 v2026.09.21';
+ const r=S.route;
+ let html='';
+ if(r.name==='home')html=pageHome();
+ else if(r.name==='domain')html=pageDomain(r.domain,r.track);
+ else if(r.name==='concept')html=pageConcept(r.id);
+ else if(r.name==='review')html=pageReview();
+ else if(r.name==='search')html=pageSearch();
+ else if(r.name==='settings')html=pageSettings();
+ $('#view').innerHTML=html;
+ if(document.getElementById('calcout'))calc_duration({value:3},'c');
+}
+document.addEventListener('keydown',e=>{
+ if(S.route.name==='review'&&S.rq.queue.length&&S.rq.idx<S.rq.queue.length){
+  if(e.code==='Space'){e.preventDefault();if(!S.rq.revealed)reveal()}
+  if(S.rq.revealed&&['1','2','3'].includes(e.key))rate(+e.key-1);
+ }
+});
+render();
+</script>
+</body>
+</html>

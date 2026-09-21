@@ -1,0 +1,14 @@
+{
+  "version": "2026.09.21",
+  "updatedAt": "2026-09-21T08:15:35.787Z",
+  "schemaVersion": 1,
+  "counts": {
+    "econ": 24,
+    "finance": 24,
+    "hotspot": 20,
+    "total": 68
+  },
+  "file": "concepts.jsonl",
+  "sha256": "76238ea6d218ff1f62b64f49895cd1d33a579c3148ebfa807c4330aaab632238",
+  "size": 134863
+}

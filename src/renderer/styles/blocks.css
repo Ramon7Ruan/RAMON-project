@@ -1,0 +1,103 @@
+/* =========================================================================
+ * blocks.css —— 11 种讲解方式的视觉形态
+ *
+ * 多样性来自**结构和交互**，不是来自配色与装饰：
+ *   所有 block 共用同一套间距、圆角、边框色。
+ * 只引用 tokens.css 的变量，不得出现视觉字面量。
+ * ========================================================================= */
+
+.blk { margin-top: var(--space-6); }
+.blk-label { font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--space-2); }
+
+/* 1. prose —— 基准层，无边框无底色，避免与其它块抢注意力 */
+.prose { font-size: var(--text-md); line-height: var(--leading-loose); }
+.prose strong { font-weight: var(--weight-medium); background: var(--brand-soft); padding: 0 var(--space-1); border-radius: var(--radius-hairline); }
+
+/* 2. formula —— 居中公式 + 符号人话注释 */
+.formula-box { background: var(--surface-sunken); border-radius: var(--radius-md); padding: var(--space-5) var(--space-4); text-align: center; }
+.formula-box .fx { font-size: var(--text-hero); font-family: var(--font-serif); color: var(--text-primary); }
+.formula-box .fx .katex { font-size: 1em; }
+.formula-box .fn { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--space-2); }
+.symtab { margin-top: var(--space-3); display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-hairline) var(--space-5); }
+.symtab div { font-size: var(--text-sm); color: var(--text-secondary); padding: var(--space-1) 0; border-bottom: 0.5px solid var(--border-subtle); }
+.symtab b { font-weight: var(--weight-medium); color: var(--text-primary); font-family: var(--font-serif); margin-right: var(--space-2); }
+
+/* 3/4. curve & dataviz —— 图区统一外壳 */
+.chart-wrap { background: var(--surface-card); border: 0.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3) var(--space-3) var(--space-2); }
+.chart-wrap svg { display: block; width: 100%; height: auto; }
+.chart-src { font-size: var(--text-xs); color: var(--text-tertiary); text-align: right; margin-top: var(--space-2); }
+.chart-note { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: var(--space-2); }
+.ctrl { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); padding: 0 var(--space-2); }
+.ctrl label { font-size: var(--text-sm); color: var(--text-secondary); white-space: nowrap; }
+.ctrl input[type='range'] { flex: 1; accent-color: var(--brand); }
+.ctrl .cv { font-size: var(--text-sm); color: var(--brand); min-width: 44px; text-align: right; }
+
+/* 5. compare —— 对比表 */
+table.cmp { width: 100%; border-collapse: collapse; font-size: var(--text-base); background: var(--surface-card); border: 0.5px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
+table.cmp th { background: var(--surface-sunken); text-align: left; font-weight: var(--weight-medium); font-size: var(--text-sm); padding: var(--space-2) var(--space-4); color: var(--text-secondary); border-bottom: 0.5px solid var(--border-subtle); }
+table.cmp td { padding: var(--space-2) var(--space-4); border-bottom: 0.5px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
+table.cmp td:first-child { color: var(--text-primary); font-weight: var(--weight-medium); }
+table.cmp tr:last-child td { border-bottom: none; }
+
+/* 6. flow —— 机制传导链 */
+.flow-row { display: flex; align-items: stretch; flex-wrap: wrap; }
+.flow-step { flex: 1; min-width: 0; background: var(--surface-card); border: 0.5px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-3); text-align: center; }
+.flow-step b { display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); line-height: var(--leading-normal); }
+.flow-step span { display: block; font-size: var(--text-xs); color: var(--text-tertiary); margin-top: var(--space-1); line-height: var(--leading-normal); }
+.flow-arrow { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: var(--text-base); }
+
+/* 7. timeline —— 事件时间轴 */
+.tl { position: relative; padding-left: var(--space-5); }
+.tl::before { content: ''; position: absolute; left: 5px; top: var(--space-2); bottom: var(--space-2); width: 1px; background: var(--border-strong); }
+.tl-item { position: relative; padding-bottom: var(--space-5); }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot { position: absolute; left: calc(-1 * var(--space-5)); top: 6px; width: 11px; height: 11px; border-radius: var(--radius-pill); background: var(--surface-card); border: 1.5px solid var(--brand); }
+.tl-item.hot .tl-dot { border-color: var(--status-due); background: var(--status-due-soft); }
+.tl-date { font-size: var(--text-xs); color: var(--text-tertiary); }
+.tl-body b { display: block; font-size: var(--text-base); font-weight: var(--weight-medium); margin-top: var(--space-hairline); }
+.tl-body span { display: block; font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-hairline); line-height: var(--leading-relaxed); }
+
+/* 8. pitfall —— 误区对照 */
+.pitfall { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.pf { border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-base); line-height: var(--leading-relaxed); }
+.pf .pf-h { font-size: var(--text-xs); margin-bottom: var(--space-2); }
+.pf-wrong { background: var(--status-fuzzy-soft); }
+.pf-wrong .pf-h { color: var(--status-fuzzy); }
+.pf-right { background: var(--status-known-soft); }
+.pf-right .pf-h { color: var(--status-known); }
+.pf-why { margin-top: var(--space-3); font-size: var(--text-sm); color: var(--text-secondary); padding-left: var(--space-3); border-left: 2px solid var(--border-strong); line-height: var(--leading-relaxed); }
+
+/* 9. case —— 微案例 */
+.case-card { background: var(--surface-card); border: 0.5px solid var(--border-subtle); border-left: 2.5px solid var(--brand); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: var(--space-3) var(--space-4); }
+.case-card .ct { font-size: var(--text-base); font-weight: var(--weight-medium); }
+.case-nums { display: flex; gap: var(--space-6); margin: var(--space-3) 0 var(--space-2); flex-wrap: wrap; }
+.case-nums div { font-size: var(--text-sm); color: var(--text-tertiary); }
+.case-nums b { display: block; font-size: var(--text-hero); font-weight: var(--weight-medium); color: var(--text-primary); line-height: var(--leading-tight); }
+.case-card p { font-size: var(--text-base); color: var(--text-secondary); line-height: var(--leading-loose); }
+
+/* 10. scale —— 数量级锚定 */
+.scale-row { display: flex; gap: var(--space-hairline); }
+.scale-tick { flex: 1; background: var(--surface-card); border: 0.5px solid var(--border-subtle); padding: var(--space-3); text-align: center; }
+.scale-tick:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.scale-tick:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.scale-tick b { display: block; font-size: var(--text-lg); font-weight: var(--weight-medium); }
+.scale-tick span { display: block; font-size: var(--text-xs); color: var(--text-tertiary); margin-top: var(--space-1); line-height: var(--leading-normal); }
+
+/* 11. calc —— 迷你计算器 */
+.calc-form { background: var(--surface-card); border: 0.5px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-4); }
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4) var(--space-5); }
+.cf label { font-size: var(--text-sm); color: var(--text-secondary); display: flex; justify-content: space-between; }
+.cf label b { font-weight: var(--weight-medium); color: var(--brand); }
+.cf input[type='range'] { width: 100%; accent-color: var(--brand); margin-top: var(--space-2); }
+.calc-out { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 0.5px solid var(--border-subtle); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+.calc-out > div { font-size: var(--text-xs); color: var(--text-tertiary); }
+.calc-out b { display: block; font-size: var(--text-hero); font-weight: var(--weight-medium); color: var(--text-primary); line-height: var(--leading-tight); }
+.calc-hint { grid-column: 1 / -1; font-size: var(--text-sm); color: var(--text-secondary); }
+.calc-hint b { display: inline; font-size: var(--text-base); color: var(--quote-up); }
+
+/* Block 渲染失败时的降级（PRD §8 部分失败） */
+.blk-degraded {
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+  border: 0.5px dashed var(--border-strong); color: var(--text-tertiary);
+  font-size: var(--text-sm);
+}

@@ -1,0 +1,187 @@
+/* =========================================================================
+ * tokens.css —— 视觉值的**唯一来源**
+ *
+ * 规则（PRD NF11 / 页面交互设计 §5.5）：
+ *   T1 所有颜色、圆角、间距、字号、字体栈、动效时长只定义在本文件
+ *   T2 组件里只能出现 var(--xxx)，不允许出现 #RRGGBB、rgba()、12px 这类字面量
+ *   T3 token 按**用途**命名（--text-secondary），不按外观命名（禁止 --blue-500）
+ *   T4 分两层：基础层（不随主题变）+ 主题层（浅色 / 深色 / 未来的 v1.1 主题各一套）
+ *   T5 预留插图槽位 --deco-slot-size（v1.0 不渲染内容、不占高度）
+ *
+ * 换肤 = 只替换下面 [data-theme="..."] 里的主题层。
+ * ========================================================================= */
+
+/* ------------------------- 基础层（不随主题变） ------------------------- */
+
+:root {
+  /* 间距梯度 */
+  --space-hairline: 2px;   /* 微内边距：胶囊、行内标记等 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 80px;
+
+  /* 圆角 */
+  --radius-hairline: 2px;  /* 行内高亮、标记 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* 字号阶梯 */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 15px;
+  --text-title: 22px;
+  --text-hero: 18px;
+
+  /* 行高 */
+  --leading-tight: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+  --leading-loose: 1.75;
+
+  /* 字重（只用两档） */
+  --weight-regular: 400;
+  --weight-medium: 500;
+
+  /* 字体栈 —— v1.1 换风格时改这里即可 */
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Times New Roman", Georgia, "Songti SC", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* 动效 */
+  --dur-fast: 0.12s;
+  --dur-base: 0.2s;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  /* 布局 */
+  --sidebar-width: 208px;
+  --topbar-height: 52px;
+  --content-max: 760px;
+
+  /* T5 预留装饰槽位：v1.0 恒为 0，v1.1 加插画时改这里 */
+  --deco-slot-size: 0px;
+}
+
+/* ----------------------------- 主题层：浅色 ----------------------------- */
+
+[data-theme='light'] {
+  --surface-page: #fafaf8;
+  --surface-card: #ffffff;
+  --surface-sunken: #f2f1ed;
+  --surface-raised: #e9e8e2;
+  --surface-overlay: rgba(0, 0, 0, 0.04);
+
+  --text-primary: #1f1e1c;
+  --text-secondary: #6b6a65;
+  --text-tertiary: #9a9993;
+  --text-on-brand: #ffffff;
+
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.2);
+
+  --brand: #2f6fb0;
+  --brand-soft: rgba(47, 111, 176, 0.1);
+  --brand-line: rgba(47, 111, 176, 0.3);
+
+  --status-known: #4c8a3f;
+  --status-known-soft: rgba(76, 138, 63, 0.12);
+  --status-due: #c68a1e;
+  --status-due-soft: rgba(198, 138, 30, 0.13);
+  --status-fuzzy: #b4453f;
+  --status-fuzzy-soft: rgba(180, 69, 63, 0.1);
+
+  /* 金融数据配色：涨红跌绿（A 股约定，见 PRD §5.2） */
+  --quote-up: #c0392b;
+  --quote-down: #2e7d32;
+
+  /* 图表系列色 */
+  --chart-series-1: #2f6fb0;
+  --chart-series-2: #c68a1e;
+  --chart-series-3: #4c8a3f;
+  --chart-series-4: #b4453f;
+  --chart-grid: rgba(0, 0, 0, 0.08);
+  --chart-axis: rgba(0, 0, 0, 0.28);
+}
+
+/* ----------------------------- 主题层：深色 ----------------------------- */
+
+[data-theme='dark'] {
+  --surface-page: #1a1a18;
+  --surface-card: #242422;
+  --surface-sunken: #2e2e2b;
+  --surface-raised: #3a3a36;
+  --surface-overlay: rgba(255, 255, 255, 0.06);
+
+  --text-primary: #edebe6;
+  --text-secondary: #a5a39d;
+  --text-tertiary: #75736e;
+  --text-on-brand: #10202e;
+
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.24);
+
+  --brand: #6fa8dc;
+  --brand-soft: rgba(111, 168, 220, 0.14);
+  --brand-line: rgba(111, 168, 220, 0.36);
+
+  --status-known: #8fbf73;
+  --status-known-soft: rgba(143, 191, 115, 0.14);
+  --status-due: #e0b050;
+  --status-due-soft: rgba(224, 176, 80, 0.14);
+  --status-fuzzy: #e0857f;
+  --status-fuzzy-soft: rgba(224, 133, 127, 0.13);
+
+  /* 深色下同样遵守涨红跌绿，只是把明度提上来保证可读 */
+  --quote-up: #e0857f;
+  --quote-down: #86c07a;
+
+  --chart-series-1: #6fa8dc;
+  --chart-series-2: #e0b050;
+  --chart-series-3: #8fbf73;
+  --chart-series-4: #e0857f;
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-axis: rgba(255, 255, 255, 0.3);
+}
+
+/* 跟随系统 */
+@media (prefers-color-scheme: dark) {
+  [data-theme='system'] {
+    --surface-page: #1a1a18;
+    --surface-card: #242422;
+    --surface-sunken: #2e2e2b;
+    --surface-raised: #3a3a36;
+    --surface-overlay: rgba(255, 255, 255, 0.06);
+    --text-primary: #edebe6;
+    --text-secondary: #a5a39d;
+    --text-tertiary: #75736e;
+    --text-on-brand: #10202e;
+    --border-subtle: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.24);
+    --brand: #6fa8dc;
+    --brand-soft: rgba(111, 168, 220, 0.14);
+    --brand-line: rgba(111, 168, 220, 0.36);
+    --status-known: #8fbf73;
+    --status-known-soft: rgba(143, 191, 115, 0.14);
+    --status-due: #e0b050;
+    --status-due-soft: rgba(224, 176, 80, 0.14);
+    --status-fuzzy: #e0857f;
+    --status-fuzzy-soft: rgba(224, 133, 127, 0.13);
+    --quote-up: #e0857f;
+    --quote-down: #86c07a;
+    --chart-series-1: #6fa8dc;
+    --chart-series-2: #e0b050;
+    --chart-series-3: #8fbf73;
+    --chart-series-4: #e0857f;
+    --chart-grid: rgba(255, 255, 255, 0.1);
+    --chart-axis: rgba(255, 255, 255, 0.3);
+  }
+}

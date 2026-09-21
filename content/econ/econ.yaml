@@ -1,0 +1,978 @@
+# 经济学 24 个概念（宏观 10 / 微观 8 / 计量 6）
+# 差异化约束：本区每个概念必须包含 curve 或 flow（机制与均衡直觉）
+
+# ============================ 宏观经济 ============================
+
+- id: econ.macro.monetary-transmission
+  domain: econ
+  track: macro
+  title: 货币政策传导机制
+  one_liner: 央行降息，为什么企业不一定马上借钱？
+  key_points:
+    - 三道关：银行负债端、信贷定价、企业预期
+    - 漏损多发生在最后一关，取决于预期而非利率
+  difficulty: 2
+  tags: [利率, 政策, 机制]
+  order: 1
+  updated_at: 2026-09-21
+  recipe: [prose, flow, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "央行降息只是把资金的**批发价**压低。要变成企业账上的**零售价**，中间要过三道关，每一道都可能漏损。"}
+    - type: flow
+      label: 传导链路
+      steps:
+        - {label: 政策利率下调, note: 7 天逆回购}
+        - {label: 银行资金成本, note: 负债端传导}
+        - {label: 贷款利率, note: LPR 报价调整}
+        - {label: 企业投资意愿, note: 取决于预期回报}
+    - type: case
+      label: 微案例
+      title: LPR 连续下调之后
+      nums: [{label: 1 年期 LPR 累计下调, v: 20bp}, {label: 企业中长期贷款增速, v: 回落}]
+      body: 利率降了，企业中长期贷款却没有同步放量，说明卡点在链条后半段——预期，而不是资金价格。
+    - {type: pitfall, label: 误区, wrong: 降息一定会刺激企业投资。, right: 只有预期回报率高于贷款利率时企业才会借钱。, why: 传导链条的后半段取决于预期，不是资金价格本身。}
+  links:
+    - {to: econ.macro.liquidity-trap, reason: 对比：传到不动时的极端情形}
+    - {to: econ.macro.money-multiplier, reason: 前置：银行体系如何创造存款}
+    - {to: hotspot.event.pboc-lpr-2026, reason: 案例：传导链条上的一次实际漏损}
+
+- id: econ.macro.liquidity-trap
+  domain: econ
+  track: macro
+  title: 流动性陷阱
+  one_liner: 利率降到接近零之后，货币政策还剩下什么？
+  key_points:
+    - 利率接近零时，货币需求曲线趋于垂直
+    - 钱没进信贷循环，就不会变成通胀
+  difficulty: 3
+  tags: [利率, 货币政策]
+  order: 2
+  updated_at: 2026-09-21
+  recipe: [prose, curve, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "当利率已经接近零，人们预期未来利率只会升、债券只会跌，于是宁可不买债券也要持有现金。此时**货币需求曲线变成垂直的**，投放再多流动性也压不动利率。"}
+    - type: curve
+      label: 货币需求与利率
+      xLabel: 货币供给 M
+      yLabel: 利率 r
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 虚线为陷阱区间——曲线趋于垂直，M 增加而 r 几乎不动。
+      series:
+        - {name: 常规区间, points: [[1, 8.4], [2, 6.6], [3, 5.2], [4.2, 4.1], [5.5, 3.3]]}
+        - {name: 陷阱区间, points: [[5.5, 3.3], [6.6, 2.5], [7.4, 1.7], [8.2, 0.9], [9.2, 0.4], [10, 0.2]], dash: 5}
+    - type: case
+      label: 微案例
+      title: 日本的二十年
+      nums: [{label: 政策利率, v: 约 0%}, {label: 持续时长, v: 20 年以上}]
+      body: 基础货币大幅扩张，但信贷与物价长期低迷，政策工具从利率转向量化宽松与收益率曲线控制。
+    - {type: pitfall, label: 误区, wrong: 央行印钱必然带来通货膨胀。, right: 若新增货币没有进入信贷与支出循环，它会沉淀为超额准备金。, why: 通胀的触发条件是货币进入实体支出，而非货币总量增加。}
+  links:
+    - {to: econ.macro.monetary-transmission, reason: 前置：正常情况下的传导链条}
+    - {to: econ.macro.inflation-expectation, reason: 延伸：预期如何决定通胀}
+
+- id: econ.macro.phillips-curve
+  domain: econ
+  track: macro
+  title: 菲利普斯曲线
+  one_liner: 通胀和失业之间，真的存在稳定的取舍吗？
+  key_points:
+    - 短期确实存在通胀与失业的取舍
+    - 长期曲线垂直，取舍消失
+  difficulty: 2
+  tags: [通胀, 失业]
+  order: 3
+  updated_at: 2026-09-21
+  recipe: [prose, curve, timeline, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "最初的菲利普斯曲线是一条**稳定的负相关曲线**：失业低时通胀高。1970 年代的**滞胀**打破了这个关系——曲线整体右移，于是有了「附加预期的菲利普斯曲线」。"}
+    - type: curve
+      label: 短期与长期
+      xLabel: 失业率 u
+      yLabel: 通胀率
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 短期可沿曲线取舍；长期是垂直线，取舍消失。
+      series:
+        - {name: 短期，预期通胀 2%, points: [[1.2, 8.6], [2.6, 6.4], [4.2, 4.6], [6, 3.1], [8, 2.1]]}
+        - {name: 长期，自然失业率, points: [[5.6, 0.6], [5.6, 9.4]], dash: 5}
+    - type: timeline
+      label: 认知演变
+      events:
+        - {date: "1958", title: Phillips 提出负相关关系, note: 基于英国近百年工资与失业数据。}
+        - {date: "1968", title: Friedman 与 Phelps 引入预期, note: 指出长期不存在这种取舍。}
+        - {date: "1970s", title: 滞胀出现, note: 曲线右移，原版模型失效。, hot: true}
+        - {date: "1980s 后", title: 附加预期版本成为主流, note: 短期有取舍，长期回到自然失业率。}
+    - {type: pitfall, label: 误区, wrong: 可以用高通胀长期换取低失业。, right: 只可能短期换取，代价是通胀预期上移后取舍彻底消失。, why: 预期会适应。一旦工人和企业把高通胀计入定价，实际购买力被抵消。}
+  links:
+    - {to: econ.macro.inflation-expectation, reason: 延伸：预期为什么决定了这条曲线的位置}
+    - {to: econ.macro.liquidity-trap, reason: 对比：极端货币环境下的政策困境}
+    - {to: hotspot.event.euro-area-energy, reason: 案例：供给冲击推动曲线整体上移}
+
+- id: econ.macro.cpi-vs-core
+  domain: econ
+  track: macro
+  title: CPI 与核心 CPI
+  one_liner: 整体通胀 3%，为什么央行更盯着核心通胀？
+  key_points:
+    - 核心 CPI 剔除食品与能源的短期波动
+    - 看趋势用核心，看生活成本用整体
+  difficulty: 1
+  tags: [通胀, 数据]
+  order: 4
+  updated_at: 2026-09-21
+  recipe: [prose, dataviz, compare, flow, case]
+  blocks:
+    - {type: prose, label: 定义, body: "整体 CPI 里，食品与能源的波动**又大又快**。核心 CPI 把它们剔掉，用来观察**通胀的趋势**——因为货币政策影响不了油价，但能影响趋势。"}
+    - type: dataviz
+      label: 两类指标的差异
+      chart: line
+      xLabel: 月份
+      yLabel: 同比 %
+      xTicks: [1, 2, 3, 4, 5, 6, 7, 8]
+      series:
+        - {name: 整体 CPI, points: [2.1, 4.8, 3.2, 2.6, 1.9, 3.4, 2.2, 2.8]}
+        - {name: 核心 CPI, points: [2.0, 2.3, 2.4, 2.5, 2.4, 2.6, 2.5, 2.5]}
+      source: 示意数据，仅用于说明波动差异
+    - type: compare
+      label: 两个口径怎么选
+      columns: ["", 整体 CPI, 核心 CPI]
+      rows:
+        - [包含范围, 一篮子全部商品与服务, 剔除食品与能源]
+        - [波动特征, 大，受供给冲击主导, 小，反映需求与工资]
+        - [适用场景, 衡量生活成本变化, 判断通胀趋势]
+    - type: case
+      label: 微案例
+      title: 一次油价冲击
+      nums: [{label: 油价同比, v: +35%}, {label: 整体 CPI 抬升, v: 约 1.2 个百分点}]
+      body: 整体 CPI 跳升，核心 CPI 几乎不动。若央行因此加息，会误伤并未过热的需求。
+    - type: flow
+      label: 指数是怎么算出来的
+      steps:
+        - {label: 选定一篮子, note: 按居民消费结构}
+        - {label: 采集价格, note: 各品类定期采价}
+        - {label: 加权汇总, note: 按支出权重}
+        - {label: 对比基期, note: 得到同比与环比}
+  links:
+    - {to: econ.macro.inflation-expectation, reason: 延伸：核心通胀与预期互相强化}
+    - {to: hotspot.data.pmi-reading, reason: 关联：另一类月度经济数据怎么看}
+
+- id: econ.macro.gdp-three-ways
+  domain: econ
+  track: macro
+  title: GDP 的三种核算
+  one_liner: 同一个 GDP，为什么有三个算法？
+  key_points:
+    - 生产法、收入法、支出法，理论上必然相等
+    - 三法结果不一致时，差额就是统计误差
+  difficulty: 2
+  tags: [GDP, 核算]
+  order: 5
+  updated_at: 2026-09-21
+  recipe: [prose, compare, flow, case]
+  blocks:
+    - {type: prose, label: 定义, body: "GDP 可以从**谁生产、谁拿到钱、谁花出去**三个角度算。因为是同一笔经济活动的三个切面，理论上必然相等，实际中的差额记为统计误差。"}
+    - type: compare
+      label: 三种算法
+      columns: ["", 生产法, 收入法, 支出法]
+      rows:
+        - [看的角度, 各部门增加值, 要素报酬, 最终使用]
+        - [主要构成, 各行业增加值之和, 工资加利息加利润加税收, 消费加投资加政府支出加净出口]
+        - [常见用途, 看产业结构, 看分配格局, 看需求结构]
+    - type: flow
+      label: 支出法的构成
+      steps:
+        - {label: 居民消费, note: 占比最高}
+        - {label: 资本形成, note: 投资}
+        - {label: 政府支出, note: 财政发力}
+        - {label: 净出口, note: 出口减进口}
+    - {type: case, label: 微案例, title: 数据修订, nums: [{label: 首次公布与终值差, v: 常见 0.3 个百分点内}], body: 分季核算后期修订是常态，判断趋势要看连续几个季度的方向，而不是单点数字。}
+  links:
+    - {to: econ.macro.fiscal-multiplier, reason: 延伸：政府支出对产出的放大效应}
+    - {to: econ.macro.okuns-law, reason: 延伸：产出与失业的经验关系}
+
+- id: econ.macro.fiscal-multiplier
+  domain: econ
+  track: macro
+  title: 财政乘数
+  one_liner: 政府多花一块钱，总需求会多出几块？
+  key_points:
+    - 乘数大小取决于漏损：储蓄、税收、进口
+    - 产能闲置时乘数大，满负荷时接近零
+  difficulty: 3
+  tags: [财政, 乘数]
+  order: 6
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, dataviz, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "政府支出变成某人的收入，他又花掉一部分，再变成别人的收入——层层递推。**边际消费倾向越高、漏损越少，乘数越大**。"}
+    - type: formula
+      label: 简单乘数
+      latex: k = \frac{1}{1 - c(1-t) + m}
+      note: c 为边际消费倾向，t 为税率，m 为边际进口倾向
+      symbols:
+        - {s: c, m: 收入中用于消费的比例}
+        - {s: t, m: 收入中被征税的比例}
+        - {s: m, m: 收入中用于进口的比例}
+    - type: curve
+      label: 乘数随漏损衰减
+      xLabel: 漏损比例
+      yLabel: 乘数
+      xDomain: [0, 1]
+      yDomain: [0, 6]
+      series:
+        - {name: 乘数曲线, points: [[0.1, 1.11], [0.2, 1.25], [0.4, 1.67], [0.6, 2.5], [0.8, 5]]}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0.5", t: "深度衰退\n产能大量闲置"}
+        - {v: "1.0", t: "约束较多\n税率与进口都高"}
+        - {v: "1.5+", t: "接近满负荷\n挤出效应明显"}
+    - type: dataviz
+      label: 不同情形下的乘数估计
+      chart: bar
+      xLabel: 情形
+      yLabel: 乘数
+      xTicks: [深度衰退, 常规下行, 接近满负荷, 高开放度]
+      series: [{name: 乘数估计, points: [2.1, 1.4, 0.7, 0.5]}]
+      source: 示意数据，仅用于说明乘数随约束增强而衰减
+  links:
+    - {to: econ.macro.gdp-three-ways, reason: 前置：政府支出是 GDP 的组成部分}
+    - {to: econ.micro.taxes-incidence, reason: 延伸：税收最后落在谁身上}
+
+- id: econ.macro.okuns-law
+  domain: econ
+  track: macro
+  title: 奥肯定律
+  one_liner: 产出掉 2%，失业率会升多少？
+  key_points:
+    - 产出缺口每扩大 1%，失业率约升 0.5 个百分点
+    - 这是经验规律，不同国家与时期系数会变
+  difficulty: 2
+  tags: [失业, 产出]
+  order: 7
+  updated_at: 2026-09-21
+  recipe: [prose, curve, compare, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "奥肯定律描述**产出缺口与失业率变动**之间的经验关系：产出低于潜在水平越多，失业率上升越多。系数是统计出来的，不是推导出来的。"}
+    - type: curve
+      label: 产出缺口与失业率
+      xLabel: 产出缺口 %
+      yLabel: 失业率变动 百分点
+      xDomain: [-6, 4]
+      yDomain: [-3, 4]
+      series:
+        - {name: 经验关系, points: [[-6, 3], [-4, 2], [-2, 1], [0, 0], [2, -1], [4, -2]]}
+    - type: compare
+      label: 成立与不成立
+      columns: ["", 经验关系成立时, 关系减弱时]
+      rows:
+        - [劳动力参与, 稳定, 大量人退出劳动力市场]
+        - [生产率, 变化平缓, 企业先减产不裁人]
+        - [常见时期, 常规周期, 深度衰退初期]
+    - {type: pitfall, label: 误区, wrong: 产出回升，失业率就会立刻下降。, right: 企业往往先增加工时、再招人，就业恢复滞后。, why: 劳动关系有调整成本，裁员与招人都不是即时的。}
+  links:
+    - {to: econ.macro.gdp-three-ways, reason: 前置：产出怎么衡量}
+    - {to: econ.macro.phillips-curve, reason: 延伸：失业与通胀的另一条经验关系}
+
+- id: econ.macro.money-multiplier
+  domain: econ
+  track: macro
+  title: 货币乘数
+  one_liner: 央行投放 1 亿，为什么市场多了好几亿？
+  key_points:
+    - 乘数等于准备金率的倒数，但会被现金漏损压低
+    - 银行不贷款时，乘数机制空转
+  difficulty: 3
+  tags: [货币, 银行]
+  order: 8
+  updated_at: 2026-09-21
+  recipe: [prose, formula, flow, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "银行收到存款只留一部分做准备金，其余贷出；贷款又变成别人的存款。**同一笔基础货币被反复使用**，广义货币因此成倍扩张。"}
+    - type: formula
+      label: 简单货币乘数
+      latex: m = \frac{1 + c}{r + c}
+      note: r 为准备金率，c 为现金与存款之比
+      symbols:
+        - {s: r, m: 法定与超额准备金率之和}
+        - {s: c, m: 公众持有现金占存款的比例}
+    - type: flow
+      label: 存款创造过程
+      steps:
+        - {label: 央行投放, note: 基础货币}
+        - {label: 银行留准备金, note: 按比例}
+        - {label: 其余贷出, note: 变成他人存款}
+        - {label: 循环再贷, note: 逐轮衰减}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "1.0", t: "极端情形\n银行不放贷"}
+        - {v: "5", t: "准备金率 20%\n现金漏损小"}
+        - {v: "10", t: "准备金率 10%\n接近上限"}
+  links:
+    - {to: econ.macro.monetary-transmission, reason: 前置：货币如何影响实体}
+    - {to: hotspot.data.social-financing, reason: 关联：社融与货币供应量的差别}
+
+- id: econ.macro.exchange-rate-regime
+  domain: econ
+  track: macro
+  title: 汇率制度
+  one_liner: 固定汇率和独立货币政策，为什么只能选一个？
+  key_points:
+    - 固定汇率、资本自由流动、独立货币政策三者只能取二
+    - 多数经济体选择中间路线，带管理浮动
+  difficulty: 3
+  tags: [汇率, 政策]
+  order: 9
+  updated_at: 2026-09-21
+  recipe: [prose, compare, flow, timeline, case]
+  blocks:
+    - {type: prose, label: 定义, body: "汇率制度是「用什么规则决定本币对外价格」。核心约束是**不可能三角**：固定汇率、资本自由流动、独立货币政策，三者只能同时满足两个。"}
+    - type: compare
+      label: 三种典型选择
+      columns: ["", 放弃独立货币政策, 放弃固定汇率, 放弃资本自由流动]
+      rows:
+        - [代表安排, 货币局与共同货币, 自由浮动, 严格资本管制]
+        - [代价, 利率跟随外部, 汇率波动大, 配置效率损失]
+        - [常见场景, 小型开放经济体, 大型经济体, 转型期]
+    - type: timeline
+      label: 制度演变
+      events:
+        - {date: "1944", title: 布雷顿森林体系, note: 美元与黄金挂钩，其余货币盯美元。}
+        - {date: "1973", title: 转向浮动, note: 固定汇率体系解体。, hot: true}
+        - {date: "1990s", title: 中间制度消失论, note: 认为只剩两极可行。}
+        - {date: "2000s 后", title: 中间路线回归, note: 带管理浮动被广泛采用。}
+    - {type: case, label: 微案例, title: 联系汇率制, nums: [{label: 利率自主权, v: 基本放弃}], body: 为了守住固定汇率，当地利率必须跟随锚货币，代价是本地经济周期与外部不同步时无法独立调节。}
+    - type: flow
+      label: 不可能三角的取舍
+      steps:
+        - {label: 先定资本账户, note: 开放还是管制}
+        - {label: 再定汇率安排, note: 固定还是浮动}
+        - {label: 最后看利率主权, note: 前两者定了它就没得选}
+  links:
+    - {to: econ.macro.inflation-expectation, reason: 延伸：汇率与通胀预期的传导}
+    - {to: hotspot.event.fed-cut-2026, reason: 关联：主要货币政策的溢出效应}
+    - {to: hotspot.event.currency-defense, reason: 案例：不可能三角约束下的实际选择}
+
+- id: econ.macro.inflation-expectation
+  domain: econ
+  track: macro
+  title: 通胀预期
+  one_liner: 还没涨价，为什么大家已经在按涨价做打算了？
+  key_points:
+    - 预期会自我实现：怕涨就先买、先提价
+    - 锚定得住的预期，比一次加息更值钱
+  difficulty: 3
+  tags: [通胀, 预期]
+  order: 10
+  updated_at: 2026-09-21
+  recipe: [prose, curve, pitfall, case, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "通胀预期是人们对未来物价的判断。它会**改变当下的行为**——工人要求加薪、企业提前提价、居民提前购买，于是预期的通胀真的发生了。"}
+    - type: curve
+      label: 预期上移推动曲线
+      xLabel: 失业率 u
+      yLabel: 通胀率
+      xDomain: [0, 10]
+      yDomain: [0, 12]
+      note: 预期上移会把整条短期曲线向上推，而不是沿曲线移动。
+      series:
+        - {name: 预期通胀 2%, points: [[1.5, 9], [3, 7], [5, 5], [7, 3.5], [9, 2.5]]}
+        - {name: 预期通胀 5%, points: [[1.5, 12], [3, 10], [5, 8], [7, 6.5], [9, 5.5]]}
+    - type: case
+      label: 微案例
+      title: 工资与价格的螺旋
+      nums: [{label: 谈判工资涨幅, v: +8%}, {label: 次年商品提价, v: +6%}]
+      body: 工人按预期通胀要求加薪，企业把人工成本转嫁到价格上，价格又印证了工人的预期。这就是螺旋。
+    - {type: pitfall, label: 误区, wrong: 只要压住实际物价，通胀就结束了。, right: 预期没锚住，压下去的价格很快会反弹。, why: 预期决定行为，行为决定价格。不管理预期只管理价格，是治标。}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0.2 个点", t: "预期小幅上移\n暂时可控"}
+        - {v: "1 个百分点", t: "工人开始要求补偿\n进入定价"}
+        - {v: "5 个点以上", t: "锚定失效\n治理成本剧增"}
+  links:
+    - {to: econ.macro.phillips-curve, reason: 前置：预期如何改变这条曲线}
+    - {to: econ.macro.cpi-vs-core, reason: 延伸：用哪个口径观察预期}
+
+# ============================ 微观经济 ============================
+
+- id: econ.micro.price-elasticity
+  domain: econ
+  track: micro
+  title: 需求价格弹性
+  one_liner: 涨价之后，总收入到底是变多还是变少？
+  key_points:
+    - 弹性小于 1 涨价增收，大于 1 涨价减收
+    - 弹性大小取决于替代品的多少
+  difficulty: 2
+  tags: [弹性, 定价]
+  order: 11
+  updated_at: 2026-09-21
+  recipe: [prose, curve, compare, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "需求价格弹性衡量**价格变动 1% 时需求量变动百分之几**。它决定了一件反直觉的事：**涨价不一定增加收入**。"}
+    - group: interactive
+      type: curve
+      label: 拖动看斜率变化
+      xLabel: 数量 Q
+      yLabel: 价格 P
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      series: []
+      interactive: elasticity
+      note: 拖动滑块改变弹性——曲线越平坦，需求越有弹性。
+    - type: compare
+      label: 两种极端
+      columns: ["", 缺乏弹性, 富有弹性]
+      rows:
+        - [典型商品, 食盐与药品, 奢侈品与替代品多的商品]
+        - [弹性值, 小于 1, 大于 1]
+        - [涨价后总收入, 增加, 减少]
+    - type: scale
+      label: 数量级锚定
+      ticks:
+        - {v: "0", t: "完全无弹性\n涨价不减少销量"}
+        - {v: "1", t: "单位弹性\n收入不变"}
+        - {v: "很大", t: "完全弹性\n略涨价就没人买"}
+  links:
+    - {to: econ.micro.consumer-surplus, reason: 延伸：价格变化如何改变福利}
+    - {to: econ.micro.taxes-incidence, reason: 延伸：税收负担由谁承担}
+
+- id: econ.micro.externality
+  domain: econ
+  track: micro
+  title: 外部性
+  one_liner: 为什么我的行为成本，要由别人承担？
+  key_points:
+    - 成本没进价格等于负外部性，产出过多
+    - 矫正靠让外部成本进入定价，不是禁止
+  difficulty: 2
+  tags: [市场失灵, 福利]
+  order: 12
+  updated_at: 2026-09-21
+  recipe: [prose, curve, compare, pitfall, case]
+  blocks:
+    - {type: prose, label: 定义, body: "当一项活动的成本或收益**没有计入交易价格**时就产生了外部性。负外部性让市场产出**多于**社会最优，正外部性让产出**少于**社会最优。"}
+    - type: compare
+      label: 两类外部性
+      columns: ["", 负外部性, 正外部性]
+      rows:
+        - [例子, 工厂排污与拥堵, 疫苗接种与基础研究]
+        - [私人产出与社会最优, 私人产出过多, 私人产出过少]
+        - [常见矫正手段, 庇古税与排放权交易, 补贴与专利保护]
+    - type: case
+      label: 微案例
+      title: 一条河的两岸
+      nums: [{label: 工厂私人成本, v: 100}, {label: 下游治水成本, v: 30}]
+      body: 工厂只算自己的 100，社会实际付出 130。差额 30 没人付账，于是产量偏高。
+    - {type: pitfall, label: 误区, wrong: 有外部性就应该直接禁止这项活动。, right: 目标是让外部成本进入定价，而不是消灭活动本身。, why: 排污的治本解是使私人成本等于社会成本，禁止通常代价过高。}
+    - type: curve
+      label: 负外部性下的产出过多
+      xLabel: 产量 Q
+      yLabel: 成本与收益
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 社会边际成本高于私人边际成本，市场均衡产量大于社会最优。
+      series:
+        - {name: 私人边际成本, points: [[1, 2], [3, 4], [5, 6], [7, 8], [9, 9.5]]}
+        - {name: 社会边际成本, points: [[1, 3.5], [3, 5.5], [5, 7.5], [7, 9], [9, 10]], dash: 5}
+        - {name: 边际收益, points: [[1, 9], [3, 7], [5, 5], [7, 3], [9, 1.5]]}
+  links:
+    - {to: econ.micro.opportunity-cost, reason: 前置：成本应该怎么算}
+    - {to: econ.micro.market-structure, reason: 延伸：市场失灵的另一类来源}
+    - {to: hotspot.event.semiconductor-export-control, reason: 案例：管制把成本外部化给整条产业链}
+
+- id: econ.micro.marginal-cost
+  domain: econ
+  track: micro
+  title: 边际成本
+  one_liner: 已经投了那么多，为什么还要看最后一单位？
+  key_points:
+    - 决策看下一个单位，不看已经花掉的
+    - 边际成本等于价格时利润最大
+  difficulty: 2
+  tags: [成本, 决策]
+  order: 13
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, compare, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "边际成本是**多生产一单位**带来的成本增量。平均成本包含已经沉没的历史投入，而边际成本回答的是「下一步该不该做」。"}
+    - type: formula
+      label: 利润最大化条件
+      latex: MC = MR
+      note: 竞争市场中 MR 等于价格 P，于是条件简化为 MC = P
+      symbols:
+        - {s: MC, m: 边际成本}
+        - {s: MR, m: 边际收益}
+    - type: curve
+      label: 边际成本与平均成本
+      xLabel: 产量 Q
+      yLabel: 单位成本
+      xDomain: [0, 10]
+      yDomain: [0, 12]
+      note: 边际成本曲线穿过平均成本曲线的最低点。
+      series:
+        - {name: 平均成本, points: [[1, 11], [2, 7.5], [3, 6], [5, 5.2], [7, 5.6], [9, 6.8]]}
+        - {name: 边际成本, points: [[1, 3], [2, 4], [3, 5], [5, 6], [7, 7.5], [9, 9.5]], dash: 5}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "低于 AC", t: "拉低平均成本"}
+        - {v: "等于 AC", t: "平均成本最低"}
+        - {v: "高于 AC", t: "推高平均成本"}
+    - type: compare
+      label: 两个成本指标各管什么
+      columns: ["", 边际成本, 平均成本]
+      rows:
+        - [回答的问题, 下一步该不该做, 整体赚不赚钱]
+        - [受沉没成本影响, 不受, 受]
+        - [定价中的角色, 决定最优产量, 决定盈亏平衡点]
+  links:
+    - {to: econ.micro.market-structure, reason: 延伸：不同市场结构下的定价能力}
+    - {to: econ.micro.utility-marginal, reason: 对比：需求侧的边际思维}
+
+- id: econ.micro.consumer-surplus
+  domain: econ
+  track: micro
+  title: 消费者剩余
+  one_liner: 愿意出 100，实际付了 60，那 40 是什么？
+  key_points:
+    - 剩余是你愿意付的与实际付的差额
+    - 价格上升会同时损失剩余与成交量
+  difficulty: 2
+  tags: [福利, 定价]
+  order: 14
+  updated_at: 2026-09-21
+  recipe: [prose, curve, compare, case]
+  blocks:
+    - {type: prose, label: 定义, body: "消费者剩余是**你愿意支付的最高价与实际支付价之间的差**。价格上升的损失分两块：还在买的人多付了钱，买不起的人彻底退出。"}
+    - type: curve
+      label: 剩余与价格
+      xLabel: 数量 Q
+      yLabel: 价格 P
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 需求曲线以下、价格线以上的面积就是消费者剩余。
+      series:
+        - {name: 需求曲线, points: [[1, 9.2], [3, 7.4], [5, 5.6], [7, 3.8], [9, 2]]}
+    - type: compare
+      label: 涨价的两种损失
+      columns: ["", 仍在购买的人, 退出市场的人]
+      rows:
+        - [损失形式, 每单位多付钱, 完全失去购买]
+        - [能否用降价挽回, 能, 能，但要降到原价以下]
+    - {type: case, label: 微案例, title: 一张机票, nums: [{label: 愿意支付, v: 1200 元}, {label: 实际成交, v: 780 元}], body: 420 元就是这趟出行的消费者剩余。它不进入任何账单，但真实存在。}
+  links:
+    - {to: econ.micro.price-elasticity, reason: 前置：需求量对价格有多敏感}
+    - {to: econ.micro.taxes-incidence, reason: 延伸：税收如何吃掉剩余}
+
+- id: econ.micro.market-structure
+  domain: econ
+  track: micro
+  title: 市场结构
+  one_liner: 同样的成本，为什么有的行业能长期赚超额利润？
+  key_points:
+    - 进入壁垒决定能否长期赚超额利润
+    - 集中度高的行业，价格更可能高于边际成本
+  difficulty: 2
+  tags: [竞争, 定价]
+  order: 15
+  updated_at: 2026-09-21
+  recipe: [prose, dataviz, compare, flow, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "市场结构按**厂商数量与进入壁垒**划分。完全竞争下价格等于边际成本，长期没有超额利润；垄断下价格高于边际成本，超额利润可以持续。"}
+    - type: compare
+      label: 四种结构
+      columns: ["", 完全竞争, 垄断竞争, 寡头, 垄断]
+      rows:
+        - [厂商数量, 很多, 较多, 少数, 一家]
+        - [进入壁垒, 无, 低, 高, 极高]
+        - [长期超额利润, 无, 趋于零, 可能存在, 持续存在]
+    - type: dataviz
+      label: 集中度与利润率
+      chart: bar
+      xLabel: 行业集中度区间
+      yLabel: 平均销售利润率 %
+      xTicks: ["低", "中低", "中", "中高", "高"]
+      series: [{name: 平均利润率, points: [3.1, 4.2, 5.6, 7.8, 11.4]}]
+      source: 示意数据，仅用于说明相关性方向
+    - {type: pitfall, label: 误区, wrong: 高利润就说明有垄断。, right: 也可能是效率更高或承担了更高风险。, why: 判断垄断要看进入壁垒与定价能力，利润本身不是证据。}
+    - type: flow
+      label: 定价能力从哪来
+      steps:
+        - {label: 进入壁垒, note: 决定竞争者能否进来}
+        - {label: 厂商数量, note: 决定彼此牵制程度}
+        - {label: 定价能力, note: 价格偏离边际成本的空间}
+        - {label: 长期利润, note: 壁垒在则超额利润在}
+  links:
+    - {to: econ.micro.marginal-cost, reason: 前置：定价的基准是什么}
+    - {to: econ.micro.externality, reason: 对比：另一类市场失灵}
+
+- id: econ.micro.utility-marginal
+  domain: econ
+  track: micro
+  title: 边际效用递减
+  one_liner: 第二杯水，为什么永远不如第一杯值钱？
+  key_points:
+    - 同一种商品，每多消费一单位带来的满足递减
+    - 需求曲线向右下，根子就在这里
+  difficulty: 1
+  tags: [效用, 需求]
+  order: 16
+  updated_at: 2026-09-21
+  recipe: [prose, curve, compare, pitfall, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "边际效用是**多消费一单位带来的额外满足**。它随消费量增加而下降——这是需求曲线向右下方倾斜的微观基础。"}
+    - type: curve
+      label: 总效用与边际效用
+      xLabel: 消费量 Q
+      yLabel: 效用
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 总效用仍在上升，但每增加一单位带来的增量越来越小。
+      series:
+        - {name: 总效用, points: [[1, 3.5], [2, 6.3], [3, 8.2], [4, 9.3], [5, 9.9], [6, 10]]}
+        - {name: 边际效用, points: [[1, 3.5], [2, 2.8], [3, 1.9], [4, 1.1], [5, 0.6], [6, 0.1]], dash: 5}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "第 1 杯", t: "愿意付 100 元\n需求最迫切"}
+        - {v: "第 3 杯", t: "愿意付 30 元\n边际效用已减半"}
+        - {v: "第 5 杯", t: "愿意付 5 元\n接近可有可无"}
+    - {type: pitfall, label: 误区, wrong: 钻石比水贵，说明钻石更有用。, right: 价格由边际效用决定，水总量大所以边际效用低。, why: 这是"价值悖论"：决定价格的是最后一单位，而不是整体重要性。}
+    - type: compare
+      label: 总效用与边际效用
+      columns: ["", 总效用, 边际效用]
+      rows:
+        - [走向, 先升后平, 持续下降]
+        - [能否为负, 一般不会, 可能为负]
+        - [与决策的关系, 描述结果, 决定要不要再来一单位]
+  links:
+    - {to: econ.micro.consumer-surplus, reason: 延伸：边际效用如何汇成剩余}
+    - {to: econ.micro.price-elasticity, reason: 延伸：需求曲线的形状从哪来}
+
+- id: econ.micro.opportunity-cost
+  domain: econ
+  track: micro
+  title: 机会成本
+  one_liner: 这笔钱没花出去，也有成本吗？
+  key_points:
+    - 成本是放弃的最好选项，不是账面支出
+    - 沉没成本不该进入当下决策
+  difficulty: 1
+  tags: [成本, 决策]
+  order: 17
+  updated_at: 2026-09-21
+  recipe: [prose, curve, compare, case, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "机会成本是**为了做这件事而放弃的最好选择**。它常常不出现在任何账单上，却是决策真正的成本；而已经花掉、无法收回的**沉没成本**不该影响下一步。"}
+    - type: compare
+      label: 三种成本的区分
+      columns: ["", 会计成本, 机会成本, 沉没成本]
+      rows:
+        - [是否记账, 记, 不记, 记]
+        - [决策相关性, 部分相关, 强相关, 不相关]
+        - [例子, 支付的租金, 放弃的存款利息, 已投入的调研费]
+    - type: case
+      label: 微案例
+      title: 要不要继续这个项目
+      nums: [{label: 已投入, v: 200 万}, {label: 未来还需投入, v: 300 万}, {label: 预计回收, v: 250 万}]
+      body: 已投入的 200 万是沉没成本。只看未来：再投 300 万、回收 250 万，冷静的答案是不继续。
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0", t: "几乎无更好选项"}
+        - {v: "中等", t: "有明显的次优选择"}
+        - {v: "很高", t: "放弃的是最好的那条路"}
+    - type: curve
+      label: 生产可能性边界
+      xLabel: 产品 A 产量
+      yLabel: 产品 B 产量
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 边界上的每一点都是有效的；多生产 A 的机会成本就是放弃的 B。
+      series:
+        - {name: 可能性边界, points: [[0.5, 9.7], [2, 9], [4, 7.7], [6, 6], [8, 3.6], [9.7, 0.5]]}
+  links:
+    - {to: econ.micro.externality, reason: 延伸：未被计入的成本还有一类}
+    - {to: econ.econometrics.endogeneity, reason: 对比：什么才叫"真实的原因"}
+
+- id: econ.micro.taxes-incidence
+  domain: econ
+  track: micro
+  title: 税收归宿
+  one_liner: 向商家征税，为什么最后是你多付钱？
+  key_points:
+    - 谁交税和谁承担税负是两件事
+    - 需求越缺乏弹性，消费者承担越多
+  difficulty: 2
+  tags: [税收, 弹性]
+  order: 18
+  updated_at: 2026-09-21
+  recipe: [prose, curve, flow, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "税收归宿指**税负最终落在谁身上**。法定纳税人只是代缴者，真正的分担比例由**供需双方的相对弹性**决定。"}
+    - type: curve
+      label: 税负在买卖双方之间的分配
+      xLabel: 数量 Q
+      yLabel: 价格 P
+      xDomain: [0, 10]
+      yDomain: [0, 10]
+      note: 征税后价格上升的幅度，取决于供需曲线谁更陡。
+      series:
+        - {name: 需求, points: [[1, 9], [3, 7], [5, 5], [7, 3], [9, 1]]}
+        - {name: 供给, points: [[1, 1], [3, 3], [5, 5], [7, 7], [9, 9]]}
+        - {name: 征税后的供给, points: [[1, 2.5], [3, 4.5], [5, 6.5], [7, 8.5]], dash: 5}
+    - type: flow
+      label: 税负转移路径
+      steps:
+        - {label: 法定纳税, note: 名义上由谁缴}
+        - {label: 价格调整, note: 供给侧提价}
+        - {label: 数量减少, note: 成交萎缩}
+        - {label: 实际分担, note: 由相对弹性决定}
+    - {type: pitfall, label: 误区, wrong: 向商家征税，负担就全在商家。, right: 商家会把能转的部分加到价格上，转不动的才自己承担。, why: 价格是双方博弈的结果，法定纳税人与实际承担者经常不同。}
+  links:
+    - {to: econ.micro.price-elasticity, reason: 前置：弹性决定能转嫁多少}
+    - {to: econ.micro.consumer-surplus, reason: 延伸：税负造成的无谓损失}
+
+# ============================ 计量经济 ============================
+
+- id: econ.econometrics.endogeneity
+  domain: econ
+  track: econometrics
+  title: 内生性
+  one_liner: 回归系数显著，就说明因果关系成立吗？
+  key_points:
+    - 内生性等于解释变量与误差项相关
+    - 显著性和拟合优度都救不了它
+  difficulty: 3
+  tags: [因果推断, 回归]
+  order: 19
+  updated_at: 2026-09-21
+  recipe: [prose, formula, flow, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "内生性指解释变量**与误差项相关**。一旦出现，最小二乘估计不再无偏，系数也就不能解释为因果效应。这是实证研究里最常见也最容易被忽视的陷阱。"}
+    - type: formula
+      label: OLS 的偏误
+      latex: \hat{\beta} = \beta + \frac{Cov(X, \varepsilon)}{Var(X)}
+      note: 只要分子不为零，估计量就偏离真值
+      symbols:
+        - {s: '\hat{\beta}', m: 估计出的系数}
+        - {s: '\beta', m: 真实的因果效应}
+        - {s: 'Cov(X, \varepsilon)', m: 解释变量与误差项的相关性}
+    - type: flow
+      label: 偏误是怎么产生的
+      steps:
+        - {label: 遗漏重要变量, note: 比如能力}
+        - {label: 该变量进入误差项, note: 没被控制}
+        - {label: 它与 X 相关, note: 能力强的人受教育更多}
+        - {label: 系数被污染, note: 不再等于因果效应}
+    - {type: pitfall, label: 误区, wrong: 系数显著、拟合优度高，结论就可信。, right: 显著性只说明统计上不为零，不说明它估计的是因果效应。, why: 内生性带来的是系统性偏误，样本再大也不会消失。}
+  links:
+    - {to: econ.econometrics.instrumental-variable, reason: 解法：用一个外生变量把它撬开}
+    - {to: finance.quant.ic-icir, reason: 延伸：因子检验里的同类问题}
+
+- id: econ.econometrics.ols-assumptions
+  domain: econ
+  track: econometrics
+  title: OLS 基本假设
+  one_liner: 最小二乘什么时候才是"最好"的估计？
+  key_points:
+    - 无偏靠外生性与无完全共线性
+    - 有效靠同方差与无自相关
+  difficulty: 3
+  tags: [回归, 假设]
+  order: 20
+  updated_at: 2026-09-21
+  recipe: [prose, formula, compare, flow, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "OLS 的性质是**在假设下成立**的。哪些假设决定无偏、哪些决定有效，分开记才不容易混。"}
+    - type: compare
+      label: 假设破坏后的后果
+      columns: ["", 影响无偏性, 影响有效性]
+      rows:
+        - [解释变量与误差相关, 是, 是]
+        - [完全共线性, 是, 无法估计]
+        - [异方差, 否, 是]
+        - [自相关, 否, 是]
+    - type: formula
+      label: 异方差下的标准误修正
+      latex: \hat{V}_{HC} = (X'X)^{-1} \left( \sum_i u_i^2 x_i x_i' \right) (X'X)^{-1}
+      note: 系数点估计不变，只修正标准误
+      symbols:
+        - {s: u_i, m: 第 i 个观测的残差}
+        - {s: x_i, m: 第 i 个观测的解释变量}
+    - {type: pitfall, label: 误区, wrong: 有异方差就必须换模型。, right: 异方差影响的是标准误，用稳健标准误即可，点估计不用改。, why: 无偏性不依赖同方差，有效性才依赖它。}
+    - type: flow
+      label: 假设与性质的对应
+      steps:
+        - {label: 外生性, note: 保证无偏}
+        - {label: 无完全共线, note: 保证可估计}
+        - {label: 同方差与无自相关, note: 保证有效}
+        - {label: 正态性, note: 保证小样本下的检验可靠}
+  links:
+    - {to: econ.econometrics.multicollinearity, reason: 延伸：共线性到底坏在哪}
+    - {to: econ.econometrics.r-squared, reason: 延伸：拟合优度能说明什么}
+
+- id: econ.econometrics.r-squared
+  domain: econ
+  track: econometrics
+  title: R² 与调整 R²
+  one_liner: 加变量一定让 R² 变大，那它还有什么用？
+  key_points:
+    - R² 只说明解释了多少方差，不说明因果
+    - 加变量必然抬高 R²，所以要看调整 R²
+  difficulty: 2
+  tags: [回归, 拟合]
+  order: 21
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, flow, scale]
+  blocks:
+    - {type: prose, label: 定义, body: "R² 是**被解释的方差比例**。它不衡量因果，也不衡量预测能力在样本外的表现。加任何一个变量都会让它上升，哪怕那个变量毫无意义。"}
+    - type: formula
+      label: 调整 R²
+      latex: \bar{R}^2 = 1 - \frac{(1 - R^2)(n - 1)}{n - k - 1}
+      note: 对加入变量施加惩罚，只有真正提升解释力才会上升
+      symbols:
+        - {s: n, m: 样本量}
+        - {s: k, m: 解释变量个数}
+    - type: flow
+      label: 怎么判断 R² 有没有意义
+      steps:
+        - {label: 先看研究类型, note: 实验还是观测}
+        - {label: 再看变量个数, note: 有没有加过无关变量}
+        - {label: 最后看样本外, note: 预测能力才是硬标准}
+    - type: scale
+      label: 数量级直觉
+      ticks:
+        - {v: "0.02", t: "预测收益\n已经很不错"}
+        - {v: "0.3", t: "截面研究\n解释力可观"}
+        - {v: "0.9", t: "受控实验\n或存在共线性问题"}
+    - type: curve
+      label: 加入无关变量后两条线的分歧
+      xLabel: 加入的无关变量个数
+      yLabel: 数值
+      xDomain: [0, 10]
+      yDomain: [0, 1]
+      note: R² 单调上升，调整 R² 先升后降——后者才反映真实解释力。
+      series:
+        - {name: R², points: [[0, 0.42], [2, 0.46], [4, 0.49], [6, 0.52], [8, 0.54], [10, 0.56]]}
+        - {name: 调整 R², points: [[0, 0.41], [2, 0.44], [4, 0.45], [6, 0.45], [8, 0.44], [10, 0.42]], dash: 5}
+  links:
+    - {to: econ.econometrics.ols-assumptions, reason: 前置：这些性质在什么假设下成立}
+    - {to: finance.quant.ic-icir, reason: 关联：因子研究更关心什么指标}
+
+- id: econ.econometrics.multicollinearity
+  domain: econ
+  track: econometrics
+  title: 多重共线性
+  one_liner: 系数正负号很怪，模型到底哪里出了问题？
+  key_points:
+    - 共线性不产生偏误，但会让系数极不稳定
+    - 完全共线时根本估不出来
+  difficulty: 3
+  tags: [回归, 共线]
+  order: 22
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "当两个或多个解释变量**高度线性相关**时，模型无法区分它们各自的贡献。系数本身仍是无偏的，但**方差被放大**，符号可能随机翻转。"}
+    - type: curve
+      label: 共线性如何放大系数方差
+      xLabel: 变量间相关性
+      yLabel: 系数标准误倍数
+      xDomain: [0, 1]
+      yDomain: [1, 10]
+      series:
+        - {name: 方差膨胀, points: [[0, 1], [0.5, 1.15], [0.8, 1.67], [0.9, 2.29], [0.99, 7.09]]}
+    - type: formula
+      label: 方差膨胀因子
+      latex: VIF_j = \frac{1}{1 - R_j^2}
+      note: 经验阈值：VIF 大于 10 一般认为共线性严重
+      symbols:
+        - {s: R_j^2, m: 用其余变量回归第 j 个变量的拟合优度}
+    - {type: pitfall, label: 误区, wrong: 共线性会导致预测不准，必须删变量。, right: 共线性主要破坏的是系数解释，对整体预测影响有限。, why: 预测用的是变量的组合，系数虽不稳但总和仍稳。}
+  links:
+    - {to: econ.econometrics.ols-assumptions, reason: 前置：无完全共线性是基本假设之一}
+    - {to: econ.econometrics.r-squared, reason: 延伸：VIF 与拟合优度的关系}
+
+- id: econ.econometrics.diff-in-diff
+  domain: econ
+  track: econometrics
+  title: 双重差分
+  one_liner: 政策已经落地了，怎么知道真的是政策起的作用？
+  key_points:
+    - 用对照组的变化剔除掉共同趋势
+    - 前提是平行趋势假设成立
+  difficulty: 3
+  tags: [因果推断, 政策评估]
+  order: 23
+  updated_at: 2026-09-21
+  recipe: [prose, formula, flow, case]
+  blocks:
+    - {type: prose, label: 定义, body: "双重差分用**处理组前后变化减去对照组前后变化**。对照组不受政策影响，它的变化代表了「本来会发生什么」，减掉它，剩下的才是政策的净效应。"}
+    - type: flow
+      label: 四个格子
+      steps:
+        - {label: 处理组政策前, note: A}
+        - {label: 处理组政策后, note: B}
+        - {label: 对照组政策前, note: C}
+        - {label: 对照组政策后, note: D}
+    - type: formula
+      label: 双重差分估计量
+      latex: \hat{\tau} = (B - A) - (D - C)
+      note: 两个差分再做差，共同趋势被抵消
+      symbols:
+        - {s: A, m: 处理组政策前均值}
+        - {s: B, m: 处理组政策后均值}
+        - {s: C, m: 对照组政策前均值}
+        - {s: D, m: 对照组政策后均值}
+    - {type: case, label: 微案例, title: 最低工资与就业, nums: [{label: 处理组就业变化, v: -1.2%}, {label: 对照组就业变化, v: -1.5%}], body: 两组都在下降，但处理组降得更少，双重差分给出 +0.3 个百分点的净效应。}
+  links:
+    - {to: econ.econometrics.endogeneity, reason: 前置：为什么要用这种设计}
+    - {to: econ.econometrics.instrumental-variable, reason: 对比：另一种识别策略}
+
+- id: econ.econometrics.instrumental-variable
+  domain: econ
+  track: econometrics
+  title: 工具变量
+  one_liner: 有个变量只通过它影响结果，这能用来做什么？
+  key_points:
+    - 工具变量要相关且外生，两个条件缺一不可
+    - 弱工具变量比不工具变量更糟
+  difficulty: 3
+  tags: [因果推断, 工具变量]
+  order: 24
+  updated_at: 2026-09-21
+  recipe: [prose, formula, curve, flow, pitfall]
+  blocks:
+    - {type: prose, label: 定义, body: "工具变量 Z 只**通过 X 影响 Y**，且不受遗漏因素干扰。它像一只外生的手，把 X 中「干净」的那部分变化挑出来，用它去估计因果效应。"}
+    - type: formula
+      label: 两阶段最小二乘
+      latex: \hat{\beta}_{IV} = \frac{Cov(Z, Y)}{Cov(Z, X)}
+      note: 分子是工具对结果的影响，分母是工具对内生变量的影响
+      symbols:
+        - {s: Z, m: 工具变量}
+        - {s: X, m: 内生解释变量}
+        - {s: Y, m: 被解释变量}
+    - type: flow
+      label: 识别的三个条件
+      steps:
+        - {label: 相关性, note: 工具要影响 X}
+        - {label: 外生性, note: 工具不直接影响 Y}
+        - {label: 排除性, note: 工具只通过 X 起作用}
+    - {type: pitfall, label: 误区, wrong: 随便找个相关变量当工具就行。, right: 弱工具变量会把偏误放大，比直接回归更糟。, why: 分母趋近零时估计量方差爆炸，还会偏向原模型的偏误方向。}
+    - type: curve
+      label: 工具越弱，估计越不可靠
+      xLabel: 第一阶段相关强度
+      yLabel: 估计量方差倍数
+      xDomain: [0, 1]
+      yDomain: [1, 12]
+      note: 相关强度趋近零时方差急剧膨胀，还会向原偏误方向收敛。
+      series:
+        - {name: 方差膨胀, points: [[0.05, 11], [0.15, 4.5], [0.3, 2.4], [0.5, 1.6], [0.7, 1.25], [0.9, 1.05]]}
+  links:
+    - {to: econ.econometrics.endogeneity, reason: 前置：要解决的到底是什么问题}
+    - {to: econ.econometrics.diff-in-diff, reason: 对比：另一种识别策略}
