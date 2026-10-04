@@ -9,6 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
+  checkContentVersion,
   contentTagForVersion,
   contentUrlFor,
   manifestUrlFor,
@@ -247,5 +248,79 @@ describe('内置地址作为设置项的默认值', () => {
         'https://cdn.jsdelivr.net/gh/o/r@main/content-dist/manifest.json',
       );
     } finally { svc.close(); }
+  });
+});
+
+/**
+ * 版本号守卫（架构 §4.8）
+ *
+ * ⚠️ 这三条测的是一个**不会让任何测试变红**的缺陷类型：
+ * 判据写错时，代码不报错、门禁照过，只是某个完全正常的流程在某一天突然走不通。
+ *
+ * 真实发生过（2026-10-04）：守卫原本拿「本地 content-dist/manifest.json 的版本」
+ * 当作"已发布"的替身，于是这条最谨慎的流程被自己拦下 ——
+ *
+ *     ① npm run build:content   本地构建，看一眼对不对
+ *     ② npm run publish:content 确认后发布
+ *
+ * 两次都是当天版本号（`版本 <= 已发布` 成立），第 ② 步直接失败，
+ * 而那时**什么都还没发布**。真正的判据应该是 tag：它才唯一标识一次对外发布。
+ */
+describe('内容版本号守卫', () => {
+  it('未发布过 → 允许（含「同一天先 build 再 publish」这一步）', () => {
+    // 本地 manifest 已经是当天版本、但该版本还没发布：必须放行，
+    // 否则"先构建看一眼、确认后发布"的流程当天走不通。
+    const r = checkContentVersion({
+      version: '2026.10.04',
+      tagExists: false,
+      localVersion: '2026.10.04',
+    });
+    expect(r.ok).toBe(true);
+  });
+
+  it('该版本已发布（tag 已存在）→ 拒绝，并说明为什么不能重发', () => {
+    const r = checkContentVersion({
+      version: '2026.09.21',
+      tagExists: true,
+      localVersion: '2026.09.21',
+    });
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.reason).toContain('已对外发布');
+    // 理由必须落到"为什么"上：正文走 tag、tag 走长缓存，同一 tag 换内容会让
+    // 缓存过旧内容的客户端永远拿不到新数据且不报错。
+    expect(r.reason).toContain('不可变更');
+    expect(r.reason).toContain(contentTagForVersion('2026.09.21'));
+  });
+
+  it('版本号回退 → 拒绝', () => {
+    const r = checkContentVersion({
+      version: '2026.01.01',
+      tagExists: false,
+      localVersion: '2026.10.04',
+    });
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.reason).toContain('不能回退');
+  });
+
+  it('本地还没有构建（首次）→ 允许', () => {
+    expect(
+      checkContentVersion({ version: '2026.10.04', tagExists: false, localVersion: null }).ok,
+    ).toBe(true);
+  });
+
+  it('拿真实环境喂一遍：读得到版本、结论确定', () => {
+    // 纯函数的测试再全，也拦不住"调用时参数传错"。所以用真实的 manifest 喂一次，
+    // 顺便确认 content-dist/manifest.json 的版本号格式是预期的。
+    const localVersion = (
+      JSON.parse(readFileSync(join(ROOT, 'content-dist/manifest.json'), 'utf8')) as {
+        version: string;
+      }
+    ).version;
+    expect(localVersion).toMatch(/^\d{4}\.\d{2}\.\d{2}$/);
+
+    const r = checkContentVersion({ version: '1970.01.01', tagExists: false, localVersion });
+    expect(r.ok).toBe(false); // 1970 必然低于任何真实版本
   });
 });

@@ -10,10 +10,12 @@
  * jsDelivr 也代理不了；裸文件才能走 CDN。
  */
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContent } from '../app/content/load';
 import { buildJsonl } from '../app/services';
+import { checkContentVersion, contentTagForVersion } from '../src/shared/repo';
 import { summarize, validateContent } from '../src/shared/validate';
 
 const ROOT = join(__dirname, '..');
@@ -24,6 +26,42 @@ const MANIFEST = join(OUT_DIR, 'manifest.json');
 function todayVersion(): string {
   const d = new Date();
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * 该版本号是否**已对外发布过**。
+ *
+ * 判据是 **tag 是否存在**，而不是本地 manifest 是什么版本 —— tag 才唯一标识一次发布
+ * （publish.sh 打 `content-v<版本>`，App 下载正文也走这个 tag）。
+ *
+ * 用本地文件当替身会误拦一个很正常的流程：先 `build:content` 本地看一眼、
+ * 确认后再 `publish:content`。两次都是当天版本号，于是 publish 被自己拦下 ——
+ * 而那时**什么都还没发布**。这个缺陷真实发生过（2026-10-04）。
+ *
+ * 只查**本地** git，不走网络：单机项目里 publish.sh 会推送它自己创建的 tag，
+ * 因此本地 tag 集合足以判断。查不到（非 git 仓库 / 未初始化）时按"未发布"处理。
+ */
+function tagExists(tag: string): boolean {
+  try {
+    execFileSync('git', ['rev-parse', '-q', '--verify', `refs/tags/${tag}`], {
+      cwd: ROOT,
+      stdio: 'ignore',
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** 本地已有构建的版本号（`content-dist/manifest.json`）；读不到返回 null。 */
+function localContentVersion(): string | null {
+  if (!existsSync(MANIFEST)) return null;
+  try {
+    const prev = JSON.parse(readFileSync(MANIFEST, 'utf8')) as { version?: string };
+    return prev.version ?? null;
+  } catch {
+    return null; // 旧文件损坏则忽略
+  }
 }
 
 function main(): number {
@@ -48,15 +86,18 @@ function main(): number {
   const version = arg ?? todayVersion();
   const updatedAt = new Date().toISOString();
 
-  // 版本号必须单调递增（架构 §4.8）
-  if (existsSync(MANIFEST)) {
-    try {
-      const prev = JSON.parse(readFileSync(MANIFEST, 'utf8')) as { version?: string };
-      if (prev.version && version <= prev.version) {
-        console.error(`✗ 版本号必须递增：当前 ${version} 不大于已发布的 ${prev.version}`);
-        return 1;
-      }
-    } catch { /* 旧文件损坏则忽略 */ }
+  // 版本号守卫（架构 §4.8）。**判定逻辑在 `src/shared/repo.ts` 的 `checkContentVersion`**——
+  // 那是个纯函数、有测试覆盖；这里只负责把"环境事实"喂进去。
+  // 之所以要分开：这个判据曾写错（用本地文件当"已发布"的替身），
+  // 而那种错误不会让任何测试变红，只会让一个正常流程某天突然走不通。
+  const verdict = checkContentVersion({
+    version,
+    tagExists: tagExists(contentTagForVersion(version)),
+    localVersion: localContentVersion(),
+  });
+  if (!verdict.ok) {
+    console.error(`✗ ${verdict.reason}`);
+    return 1;
   }
 
   const jsonl = buildJsonl(concepts, version, updatedAt);
