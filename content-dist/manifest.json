@@ -1,6 +1,6 @@
 {
   "version": "2026.10.04",
-  "updatedAt": "2026-10-04T07:31:20.341Z",
+  "updatedAt": "2026-10-04T08:43:28.906Z",
   "schemaVersion": 1,
   "counts": {
     "econ": 24,
@@ -9,6 +9,6 @@
     "total": 68
   },
   "file": "concepts.jsonl",
-  "sha256": "01cf357e80619326e6ee269a7b72b8e7b1641468f2589fe1a0bc69ee4ee35370",
+  "sha256": "9f4128619090375688147d76a14a4ac7ebdbe513de69e0321d4730fdc49502eb",
   "size": 135559
 }
